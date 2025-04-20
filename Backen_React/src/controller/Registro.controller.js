@@ -116,7 +116,7 @@ export const buscarReactivos = async (req, res) => {
   try {
     const { term } = req.query;
     
-    if (!term || term.length < 2) {
+    if (!term || term.length < 1) {
       return res.status(400).json({
         success: false,
         message: "El término de búsqueda debe tener al menos 2 caracteres"
@@ -128,7 +128,7 @@ export const buscarReactivos = async (req, res) => {
         { codigo: { $regex: term, $options: 'i' } },
         { nombre: { $regex: term, $options: 'i' } }
       ]
-    }).limit(10); // Limita los resultados
+    }).limit(100); // Limita los resultados
     
     res.status(200).json({
       success: true,

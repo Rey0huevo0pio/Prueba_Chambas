@@ -13,7 +13,10 @@ const router = express.Router();
 router.post('/reactivos', Registro_Reactivo);
 router.get('/reactivos/search', buscarReactivos);
 router.get('/reactivos/:codigo', obtenerReactivoPorCodigo);
+
 router.put('/reactivos/:codigo', actualizarReactivo);
+
+
 router.delete('/reactivos/:codigo', eliminarReactivo);
 
 export default router;

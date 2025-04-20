@@ -13,6 +13,9 @@ const useGeneratedCode = () => {
     }).join("");
     
     const caracteresEspeciales = "!@#$%^&*()-_=+[]{}<>?";
+    const caracteresCodificados = encodeURIComponent(caracteresEspeciales);
+    
+    console.log(caracteresCodificados); 
     const caracterAleatorio = caracteresEspeciales[
       Math.floor(Math.random() * caracteresEspeciales.length)
     ];

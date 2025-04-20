@@ -22,6 +22,8 @@ const HAZARD_PHRASES = [
 ];
 
 const EditReactiveForm = ({ reactiveId, onClose }) => {
+  console.log("EditReactiveForm - reactiveId:", reactiveId); // Verificación del ID
+  
   const { authUser } = useAuthStore();
   const [reactiveData, setReactiveData] = useState({
     codigo: '',
@@ -49,6 +51,12 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
   const [searchLoading, setSearchLoading] = useState(false);
 
   useEffect(() => {
+    if (!reactiveId) {
+      setError("No se proporcionó un ID de reactivo válido");
+      setLoading(false);
+      return;
+    }
+
     const fetchReactiveData = async () => {
       try {
         const response = await axios.get(
@@ -59,11 +67,11 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
             }
           }
         );
-        setReactiveData(response.data.data); // Asegúrate de acceder a response.data.data
+        setReactiveData(response.data.data || response.data); // Maneja ambos casos de respuesta
         setLoading(false);
       } catch (err) {
-        setError('Error al cargar los datos del reactivo');
-        console.error(err);
+        setError(`Error al cargar el reactivo: ${err.response?.data?.message || err.message}`);
+        console.error("Error details:", err);
         setLoading(false);
       }
     };
@@ -72,6 +80,11 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
   }, [reactiveId, authUser?.token]);
 
   const handleSearch = async () => {
+    if (!searchTerm.trim()) {
+      setError("Por favor ingrese un término de búsqueda");
+      return;
+    }
+
     setSearchLoading(true);
     try {
       const response = await axios.get(
@@ -82,10 +95,11 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
           }
         }
       );
-      setSearchResults(response.data.data); // Asegúrate de acceder a response.data.data
+      setSearchResults(response.data.data || response.data);
       setShowSearchResults(true);
+      setError(null);
     } catch (err) {
-      setError('Error al buscar reactivos');
+      setError(`Error al buscar reactivos: ${err.response?.data?.message || err.message}`);
       console.error(err);
     } finally {
       setSearchLoading(false);
@@ -96,6 +110,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
     setReactiveData(reactive);
     setShowSearchResults(false);
     setSearchTerm('');
+    setError(null);
   };
 
   const handleInputChange = (e) => {
@@ -108,33 +123,27 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
 
   const handlePictogramToggle = (pictogramId) => {
     setReactiveData(prev => {
-      if (prev.pictogramasPeligro.includes(pictogramId)) {
-        return {
-          ...prev,
-          pictogramasPeligro: prev.pictogramasPeligro.filter(id => id !== pictogramId)
-        };
-      } else {
-        return {
-          ...prev,
-          pictogramasPeligro: [...prev.pictogramasPeligro, pictogramId]
-        };
-      }
+      const newPictograms = prev.pictogramasPeligro.includes(pictogramId)
+        ? prev.pictogramasPeligro.filter(id => id !== pictogramId)
+        : [...prev.pictogramasPeligro, pictogramId];
+      
+      return {
+        ...prev,
+        pictogramasPeligro: newPictograms
+      };
     });
   };
 
   const handleHazardPhraseToggle = (phraseCode) => {
     setReactiveData(prev => {
-      if (prev.frasesPeligro.includes(phraseCode)) {
-        return {
-          ...prev,
-          frasesPeligro: prev.frasesPeligro.filter(code => code !== phraseCode)
-        };
-      } else {
-        return {
-          ...prev,
-          frasesPeligro: [...prev.frasesPeligro, phraseCode]
-        };
-      }
+      const newPhrases = prev.frasesPeligro.includes(phraseCode)
+        ? prev.frasesPeligro.filter(code => code !== phraseCode)
+        : [...prev.frasesPeligro, phraseCode];
+      
+      return {
+        ...prev,
+        frasesPeligro: newPhrases
+      };
     });
   };
 
@@ -146,6 +155,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
     formData.append('image', file);
 
     try {
+      setUploadProgress(0);
       const response = await axios.post(
         'http://192.168.100.19:5001/api/upload',
         formData,
@@ -167,14 +177,21 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
         ...prev,
         [fieldName]: response.data.imageUrl
       }));
+      setError(null);
     } catch (err) {
-      setError('Error al subir la imagen');
+      setError(`Error al subir la imagen: ${err.response?.data?.message || err.message}`);
       console.error(err);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!reactiveData.codigo) {
+      setError("El código del reactivo es requerido");
+      return;
+    }
+
     setSaving(true);
     setError(null);
     
@@ -185,7 +202,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
       };
 
       await axios.put(
-        `http://192.168.100.19:5001/api/RegistroReactivo/${reactiveId}`,
+        `http://192.168.100.19:5001/api/reactivos/${reactiveData.codigo}`,
         dataToSend,
         {
           headers: {
@@ -201,7 +218,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
         onClose();
       }, 2000);
     } catch (err) {
-      setError('Error al guardar los cambios');
+      setError(`Error al guardar los cambios: ${err.response?.data?.message || err.message}`);
       console.error(err);
     } finally {
       setSaving(false);
@@ -209,7 +226,14 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
   };
 
   if (loading) {
-    return <div>Cargando datos del reactivo...</div>;
+    return (
+      <div className="container mx-auto pt-28 max-w-7xl">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          <span className="ml-4 text-lg">Cargando datos del reactivo...</span>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -224,11 +248,12 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
             placeholder="Buscar reactivo por código o nombre..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             className="flex-1 border border-gray-300 rounded-l-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
           <button
             onClick={handleSearch}
-            disabled={searchLoading}
+            disabled={searchLoading || !searchTerm.trim()}
             className="px-4 py-2 border border-transparent rounded-r-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
             {searchLoading ? 'Buscando...' : 'Buscar'}
@@ -237,7 +262,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
         
         {/* Resultados de búsqueda */}
         {showSearchResults && (
-          <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 max-h-60 overflow-auto">
+          <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 max-h-60 overflow-auto border border-gray-200">
             {searchResults.length > 0 ? (
               searchResults.map((reactive) => (
                 <div
@@ -273,7 +298,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
           {/* Información básica */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Código</label>
+              <label className="block text-sm font-medium text-gray-700">Código*</label>
               <input
                 type="text"
                 name="codigo"
@@ -285,7 +310,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Nombre</label>
+              <label className="block text-sm font-medium text-gray-700">Nombre*</label>
               <input
                 type="text"
                 name="nombre"
@@ -347,7 +372,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
               <label className="block text-sm font-medium text-gray-700">Fecha de Registro</label>
               <input
                 type="text"
-                value={new Date(reactiveData.createdAt).toLocaleDateString()}
+                value={reactiveData.createdAt ? new Date(reactiveData.createdAt).toLocaleDateString() : 'No disponible'}
                 readOnly
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100"
               />
