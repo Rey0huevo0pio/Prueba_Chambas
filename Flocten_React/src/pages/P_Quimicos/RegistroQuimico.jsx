@@ -1,209 +1,509 @@
-import React from "react";
-import { 
-  FaFlask, 
-  FaExclamationTriangle, 
-  FaRegCalendarAlt,
-  FaInfoCircle,
-  FaShieldAlt,
-  FaFirstAid,
-  FaBiohazard
-} from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useAuthStore } from '../../store/useAuthStore';
 
-const InfoCard = ({ title, value, icon, className = "" }) => {
-  if (!value) return null;
+const HAZARD_PICTOGRAMS = [
+  { id: 'flammable', label: 'Inflamable', icon: '🔥' },
+  { id: 'toxic', label: 'Tóxico', icon: '☠️' },
+  { id: 'corrosive', label: 'Corrosivo', icon: '⚠️' },
+  { id: 'explosive', label: 'Explosivo', icon: '💥' },
+  { id: 'oxidizing', label: 'Oxidante', icon: '⚡' },
+  { id: 'health-hazard', label: 'Peligro para la salud', icon: '🚑' },
+  { id: 'environment', label: 'Peligro ambiental', icon: '🌍' },
+];
+
+const HAZARD_PHRASES = [
+  { code: 'H315', text: 'Causa irritación cutánea' },
+  { code: 'H318', text: 'Provoca graves lesiones oculares' },
+  { code: 'H335', text: 'Puede irritar las vías respiratorias' },
+  { code: 'H301', text: 'Tóxico en caso de ingestión' },
+  { code: 'H311', text: 'Tóxico en contacto con la piel' },
+  { code: 'H370', text: 'Provoca daños en los órganos' },
+];
+
+const EditReactiveForm = ({ reactiveId, onClose }) => {
+  const { authUser } = useAuthStore();
+  const [reactiveData, setReactiveData] = useState({
+    codigo: '',
+    nombre: '',
+    imagenReactivo: '',
+    imagenSimbolo: '',
+    formula: '',
+    cantidad: '',
+    numeroLote: '',
+    concentracion: '',
+    descripcion: '',
+    primerosAuxilios: '',
+    manejoSeguro: '',
+    pictogramasPeligro: [],
+    frasesPeligro: []
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchReactiveData = async () => {
+      try {
+        const response = await axios.get(
+          `http://192.168.100.19:5001/api/reactivos/${reactiveId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${authUser?.token}`
+            }
+          }
+        );
+        setReactiveData(response.data.data); // Asegúrate de acceder a response.data.data
+        setLoading(false);
+      } catch (err) {
+        setError('Error al cargar los datos del reactivo');
+        console.error(err);
+        setLoading(false);
+      }
+    };
   
-  return (
+    fetchReactiveData();
+  }, [reactiveId, authUser?.token]);
+
+  const handleSearch = async () => {
+    setSearchLoading(true);
+    try {
+      const response = await axios.get(
+        `http://192.168.100.19:5001/api/reactivos/search?term=${searchTerm}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${authUser?.token}`
+          }
+        }
+      );
+      setSearchResults(response.data.data); // Asegúrate de acceder a response.data.data
+      setShowSearchResults(true);
+    } catch (err) {
+      setError('Error al buscar reactivos');
+      console.error(err);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleSelectReactive = (reactive) => {
+    setReactiveData(reactive);
+    setShowSearchResults(false);
+    setSearchTerm('');
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setReactiveData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handlePictogramToggle = (pictogramId) => {
+    setReactiveData(prev => {
+      if (prev.pictogramasPeligro.includes(pictogramId)) {
+        return {
+          ...prev,
+          pictogramasPeligro: prev.pictogramasPeligro.filter(id => id !== pictogramId)
+        };
+      } else {
+        return {
+          ...prev,
+          pictogramasPeligro: [...prev.pictogramasPeligro, pictogramId]
+        };
+      }
+    });
+  };
+
+  const handleHazardPhraseToggle = (phraseCode) => {
+    setReactiveData(prev => {
+      if (prev.frasesPeligro.includes(phraseCode)) {
+        return {
+          ...prev,
+          frasesPeligro: prev.frasesPeligro.filter(code => code !== phraseCode)
+        };
+      } else {
+        return {
+          ...prev,
+          frasesPeligro: [...prev.frasesPeligro, phraseCode]
+        };
+      }
+    });
+  };
+
+  const handleImageUpload = async (e, fieldName) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await axios.post(
+        'http://192.168.100.19:5001/api/upload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${authUser?.token}`
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadProgress(progress);
+          }
+        }
+      );
+
+      setReactiveData(prev => ({
+        ...prev,
+        [fieldName]: response.data.imageUrl
+      }));
+    } catch (err) {
+      setError('Error al subir la imagen');
+      console.error(err);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
     
-    <div className={`bg-base-100 rounded-lg shadow-sm p-4 ${className}`}>
+    try {
+      const dataToSend = {
+        ...reactiveData,
+        controlNumber: authUser.controlNumber
+      };
+
+      await axios.put(
+        `http://192.168.100.19:5001/api/RegistroReactivo/${reactiveId}`,
+        dataToSend,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authUser?.token}`
+          }
+        }
+      );
+
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        onClose();
+      }, 2000);
+    } catch (err) {
+      setError('Error al guardar los cambios');
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <div>Cargando datos del reactivo...</div>;
+  }
+
+  return (
+    <div className="container mx-auto pt-28 max-w-7xl">
+      <h2 className="text-2xl font-bold mb-6">Editar Reactivo</h2>
       
-      <div className="flex items-center gap-3 mb-2">
-        <div className="text-primary text-xl">{icon}</div>
-        <h3 className="font-semibold text-lg">{title}</h3>
-      </div>
-      <p className="text-base-content/90">{value}</p>
-    </div>
-  );
-};
-
-const HazardPictogram = ({ icon, label, className = "" }) => (
-  <div className={`tooltip ${className} `} data-tip={label}>
-    <div className="w-14 h-14 rounded-lg bg-base-200 flex items-center justify-center text-3xl">
-      {icon}
-    </div>
-  </div>
-);
-
-const ChemicalReagentDetail = ({ reagent }) => {
-  const hazardPictograms = {
-    explosive: { icon: "💥", label: "Explosivo" },
-    flammable: { icon: "🔥", label: "Inflamable" },
-    oxidizing: { icon: "⚡", label: "Oxidante" },
-    corrosive: { icon: "⚠️", label: "Corrosivo" },
-    toxic: { icon: "☠️", label: "Tóxico" },
-    healthHazard: { icon: "💀", label: "Peligro para la salud" },
-    environmental: { icon: "🌍", label: "Peligro ambiental" },
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
-      {/* Encabezado */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <FaFlask className="text-primary" />
-            {reagent.name}
-          </h1>
-          <p className="text-2xl font-mono text-primary/80">{reagent.formula}</p>
+      {/* Buscador de reactivos */}
+      <div className="mb-6 relative">
+        <div className="flex">
+          <input
+            type="text"
+            placeholder="Buscar reactivo por código o nombre..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 border border-gray-300 rounded-l-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+          <button
+            onClick={handleSearch}
+            disabled={searchLoading}
+            className="px-4 py-2 border border-transparent rounded-r-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          >
+            {searchLoading ? 'Buscando...' : 'Buscar'}
+          </button>
         </div>
         
-        <div className="badge badge-lg badge-primary gap-2">
-          <FaRegCalendarAlt />
-          Lote: {reagent.lotNumber}
+        {/* Resultados de búsqueda */}
+        {showSearchResults && (
+          <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 max-h-60 overflow-auto">
+            {searchResults.length > 0 ? (
+              searchResults.map((reactive) => (
+                <div
+                  key={reactive._id}
+                  onClick={() => handleSelectReactive(reactive)}
+                  className="px-4 py-2 hover:bg-indigo-100 cursor-pointer flex justify-between"
+                >
+                  <span className="font-medium">{reactive.codigo}</span>
+                  <span>{reactive.nombre}</span>
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-2 text-gray-500">No se encontraron resultados</div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
         </div>
-      </div>
-
-      {/* Información básica */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <InfoCard 
-          title="Cantidad" 
-          value={reagent.quantity} 
-          icon={<FaFlask />}
-        />
-        <InfoCard 
-          title="Concentración" 
-          value={reagent.concentration} 
-          icon={<FaInfoCircle />}
-        />
-        <InfoCard 
-          title="Fecha de Caducidad" 
-          value={reagent.expirationDate} 
-          icon={<FaRegCalendarAlt />}
-        />
-      </div>
-
-      {/* Descripción */}
-      {reagent.description && (
-        <div className="bg-base-100 rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <FaInfoCircle className="text-primary" />
-            Descripción
-          </h2>
-          <p className="text-base-content/90 whitespace-pre-line">{reagent.description}</p>
+      )}
+      
+      {success && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          Los cambios se guardaron correctamente!
         </div>
       )}
 
-      {/* Sección de peligros */}
-      {(reagent.hazardPictograms?.length > 0 || reagent.hazardPhrases?.length > 0) && (
-        <div className="bg-warning/10 rounded-lg shadow-sm p-6 border border-warning/20">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <FaBiohazard className="text-warning" />
-            Información de Peligros
-          </h2>
-          
-          {/* Pictogramas */}
-          {reagent.hazardPictograms?.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-medium mb-3">Pictogramas de Peligro:</h3>
-              <div className="flex flex-wrap gap-4">
-                {reagent.hazardPictograms.map(pictogram => (
-                  <HazardPictogram
-                    key={pictogram}
-                    icon={hazardPictograms[pictogram]?.icon || "⚠️"}
-                    label={hazardPictograms[pictogram]?.label || "Peligro"}
-                    className="hover:scale-105 transition-transform"
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Frases H/P */}
-          {reagent.hazardPhrases?.length > 0 && (
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Información básica */}
+          <div className="space-y-4">
             <div>
-              <h3 className="font-medium mb-3">Frases de Peligro/Prevención:</h3>
-              <ul className="space-y-2">
-                {reagent.hazardPhrases.map(phrase => (
-                  <li key={phrase} className="bg-warning/5 p-3 rounded-lg">
-                    <span className="font-mono font-bold">{phrase}</span>
-                  </li>
-                ))}
-              </ul>
+              <label className="block text-sm font-medium text-gray-700">Código</label>
+              <input
+                type="text"
+                name="codigo"
+                value={reactiveData.codigo}
+                onChange={handleInputChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                required
+              />
             </div>
-          )}
-        </div>
-      )}
 
-      {/* Seguridad */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {reagent.firstAid && (
-          <div className="bg-error/5 rounded-lg shadow-sm p-6 border border-error/10">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <FaFirstAid className="text-error" />
-              Primeros Auxilios
-            </h2>
-            <p className="text-base-content/90 whitespace-pre-line">{reagent.firstAid}</p>
-          </div>
-        )}
-        
-        {reagent.safeHandling && (
-          <div className="bg-success/5 rounded-lg shadow-sm p-6 border border-success/10">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <FaShieldAlt className="text-success" />
-              Manipulación Segura
-            </h2>
-            <p className="text-base-content/90 whitespace-pre-line">{reagent.safeHandling}</p>
-          </div>
-        )}
-      </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Nombre</label>
+              <input
+                type="text"
+                name="nombre"
+                value={reactiveData.nombre}
+                onChange={handleInputChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                required
+              />
+            </div>
 
-      {/* Información adicional */}
-      <div className="bg-base-200 rounded-lg p-4 text-sm text-base-content/70">
-        <div className="flex items-center gap-2">
-          <FaInfoCircle />
-          <p>Última actualización: {reagent.lastUpdated || "No especificado"}</p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Fórmula</label>
+              <input
+                type="text"
+                name="formula"
+                value={reactiveData.formula}
+                onChange={handleInputChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Cantidad</label>
+              <input
+                type="text"
+                name="cantidad"
+                value={reactiveData.cantidad}
+                onChange={handleInputChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+          </div>
+
+          {/* Información adicional */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Número de Lote</label>
+              <input
+                type="text"
+                name="numeroLote"
+                value={reactiveData.numeroLote}
+                onChange={handleInputChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Concentración</label>
+              <input
+                type="text"
+                name="concentracion"
+                value={reactiveData.concentracion}
+                onChange={handleInputChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Fecha de Registro</label>
+              <input
+                type="text"
+                value={new Date(reactiveData.createdAt).toLocaleDateString()}
+                readOnly
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100"
+              />
+            </div>
+          </div>
         </div>
-      </div>
+
+        {/* Imágenes */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Imagen del Reactivo</label>
+            {reactiveData.imagenReactivo && (
+              <img 
+                src={reactiveData.imagenReactivo} 
+                alt="Reactivo" 
+                className="mt-2 h-32 object-contain border rounded"
+              />
+            )}
+            <input
+              type="file"
+              onChange={(e) => handleImageUpload(e, 'imagenReactivo')}
+              className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+              accept="image/*"
+            />
+            {uploadProgress > 0 && uploadProgress < 100 && (
+              <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                <div 
+                  className="bg-indigo-600 h-2.5 rounded-full" 
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Imagen del Símbolo</label>
+            {reactiveData.imagenSimbolo && (
+              <img 
+                src={reactiveData.imagenSimbolo} 
+                alt="Símbolo" 
+                className="mt-2 h-32 object-contain border rounded"
+              />
+            )}
+            <input
+              type="file"
+              onChange={(e) => handleImageUpload(e, 'imagenSimbolo')}
+              className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+              accept="image/*"
+            />
+          </div>
+        </div>
+
+        {/* Descripción */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Descripción</label>
+          <textarea
+            name="descripcion"
+            value={reactiveData.descripcion}
+            onChange={handleInputChange}
+            rows={3}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+
+        {/* Primeros auxilios */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Primeros Auxilios</label>
+          <textarea
+            name="primerosAuxilios"
+            value={reactiveData.primerosAuxilios}
+            onChange={handleInputChange}
+            rows={3}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+
+        {/* Manejo seguro */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Manejo Seguro</label>
+          <textarea
+            name="manejoSeguro"
+            value={reactiveData.manejoSeguro}
+            onChange={handleInputChange}
+            rows={3}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+
+        {/* Pictogramas de peligro */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Pictogramas de Peligro</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {HAZARD_PICTOGRAMS.map((pictogram) => (
+              <div key={pictogram.id} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`pictogram-${pictogram.id}`}
+                  checked={reactiveData.pictogramasPeligro.includes(pictogram.id)}
+                  onChange={() => handlePictogramToggle(pictogram.id)}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label htmlFor={`pictogram-${pictogram.id}`} className="ml-2 flex items-center">
+                  <span className="mr-1">{pictogram.icon}</span>
+                  {pictogram.label}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Frases de peligro */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Frases de Peligro</label>
+          <div className="space-y-2">
+            {HAZARD_PHRASES.map((phrase) => (
+              <div key={phrase.code} className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    type="checkbox"
+                    id={`phrase-${phrase.code}`}
+                    checked={reactiveData.frasesPeligro.includes(phrase.code)}
+                    onChange={() => handleHazardPhraseToggle(phrase.code)}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor={`phrase-${phrase.code}`} className="font-medium text-gray-700">
+                    {phrase.code}
+                  </label>
+                  <p className="text-gray-500">{phrase.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Botones de acción */}
+        <div className="flex justify-end space-x-3 pt-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          >
+            {saving ? 'Guardando...' : 'Guardar Cambios'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
 
-// Ejemplo de uso
-const ReagentDetailPage = () => {
-  const exampleReagent = {
-    name: "Cloruro de sodio",
-    formula: "NaCl",
-    quantity: "5 frascos de 500g",
-    concentration: "1M",
-    lotNumber: "LOTE-2023-001",
-    expirationDate: "15/06/2025",
-    description: "Sólido cristalino blanco, soluble en agua. Usado comúnmente en laboratorio como solución tampón y en procesos biológicos.",
-    hazardPictograms: ["corrosive", "healthHazard"],
-    hazardPhrases: ["H318 - Daño ocular grave", "P280 - Usar guantes/ropa protectora"],
-    firstAid: "En caso de contacto con los ojos, lavar inmediatamente con abundante agua durante al menos 15 minutos. Consultar a un médico si la irritación persiste.",
-    safeHandling: "Usar guantes de nitrilo y protección ocular. Evitar la inhalación de polvo. Almacenar en lugar seco y bien ventilado.",
-    lastUpdated: "10/04/2023"
-  };
-
-  return (
-<div className="min-h-screen bg-base-100/50 py-8 pt-32">
-  <div className="container mx-auto px-4">
-    <div className="flex justify-center mb-8">
-      <input
-        type="text"
-        placeholder="Buscar reactivo químico..."
-        className="input input-bordered w-full max-w-md rounded-full shadow-sm"
-      />
-    </div>
-
-    <div className="flex justify-center">
-      <div className="w-full max-w-4xl">
-        <ChemicalReagentDetail reagent={exampleReagent} />
-      </div>
-    </div>
-  </div>
-</div>
-
-  );
-};
-
-export default ReagentDetailPage;
+export default EditReactiveForm;

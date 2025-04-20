@@ -128,7 +128,7 @@ const Al_Readaptivos = () => {
       console.log("Datos a enviar:", dataToSend);
 
       const response = await axios.post(
-        "http://localhost:5001/api/RegistroReactivo", 
+        "http://192.168.100.19:5001/api/reactivos", 
         dataToSend,
         {
           headers: {
