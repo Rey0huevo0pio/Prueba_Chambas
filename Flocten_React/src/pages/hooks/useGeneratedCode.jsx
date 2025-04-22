@@ -12,7 +12,7 @@ const useGeneratedCode = () => {
       return String.fromCharCode(charCode);
     }).join("");
     
-    const caracteresEspeciales = "!@#$%^&*()-_=+[]{}<>?";
+    const caracteresEspeciales = "!@#$^&*()-_=+[]{}<>?";
     const caracteresCodificados = encodeURIComponent(caracteresEspeciales);
     
     console.log(caracteresCodificados); 

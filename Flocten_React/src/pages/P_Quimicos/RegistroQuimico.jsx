@@ -297,17 +297,18 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Información básica */}
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Código*</label>
-              <input
-                type="text"
-                name="codigo"
-                value={reactiveData.codigo}
-                onChange={handleInputChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                required
-              />
-            </div>
+          <div>
+  <label className="block text-sm font-medium text-gray-700">Código*</label>
+  <input
+    type="text"
+    name="codigo"
+    value={reactiveData.codigo}
+    readOnly
+    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+    required
+  />
+</div>
+
 
             <div>
               <label className="block text-sm font-medium text-gray-700">Nombre*</label>

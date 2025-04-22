@@ -12,7 +12,7 @@ const ImageDisplay = ({ src, alt, label, ringColor = 'primary', allowUpload = fa
       formData.append("image", file);
 
       try {
-        const res = await axios.post("http://localhost:5001/api/upload", formData, {
+        const res = await axios.post("http://192.168.100.19:5001/api/upload", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
