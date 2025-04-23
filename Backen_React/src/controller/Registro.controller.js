@@ -261,3 +261,21 @@ export const eliminarReactivo = async (req, res) => {
 };
 
 
+export const listaReactivos = async (req, res) => {
+  try {
+
+    const reactivos = await Reactivos.find({}); 
+    
+    res.status(200).json({
+      success: true,
+      data: reactivos
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener los reactivos',
+      error: error.message
+    });
+  }
+};
+
