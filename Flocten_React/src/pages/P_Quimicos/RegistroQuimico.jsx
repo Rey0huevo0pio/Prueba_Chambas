@@ -7,7 +7,6 @@ import TextAreaField from '../components/ComponetRegistro/TextAreaField';
 import HazardPictograms from '../components/ComponetRegistro/HazardPictograms';
 import HazardPhrases from '../components/ComponetRegistro/HazardPhrases';
 
-
 import { useReactiveForm } from '../hooks/hooksRegistro/useReactiveForm';
 
 const EditReactiveForm = ({ reactiveId, onClose }) => {
@@ -48,7 +47,9 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
   }
 
   return (
+  
     <div className="container mx-auto pt-28 max-w-7xl">
+
       <h2 className="text-2xl font-bold mb-6">Editar Reactivo</h2>
       
       <ReactiveSearch 
@@ -75,7 +76,6 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
           Los cambios se guardaron correctamente!
         </div>
       )}
-
 
 
       <form onSubmit={handleSubmit} className="space-y-6">

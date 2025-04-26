@@ -10,6 +10,8 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.route.js'
 import router from './routes/Registro.route.js'
 import uploadRoute from './routes/upload.route.js'
+import lisRoutes from './routes/listado.route.js'
+
 
 import { connectDB } from "./lib/db.js";
 import { app, server } from "./lib/socket.js";
@@ -58,6 +60,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use("/api/auth", authRoutes);
 app.use("/api", router);
 app.use("/api", uploadRoute);
+app.use("/api/list", lisRoutes);
+
 
 // Crear directorio de uploads y audios si no existe
 const directories = ['uploads'];

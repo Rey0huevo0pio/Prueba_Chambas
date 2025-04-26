@@ -1,5 +1,6 @@
 import Reactivos from "../models/registro.model.js";
 
+
 // Registrar nuevo reactivo (ya lo tenías)
 export const Registro_Reactivo = async (req, res) => {
   try {
@@ -261,16 +262,22 @@ export const eliminarReactivo = async (req, res) => {
 };
 
 
-export const listaReactivos = async (req, res) => {
-  try {
+// controllers/Registro.controller.js
 
-    const reactivos = await Reactivos.find({}); 
-    
+// ... (otros imports y funciones permanecen igual)
+
+export const listarReactivos = async (req, res) => {
+  try {
+    const reactivos = await Reactivos.find(); // ← Trae todos
+
     res.status(200).json({
       success: true,
+      count: reactivos.length,
       data: reactivos
     });
+
   } catch (error) {
+    console.error('Error al obtener reactivos:', error);
     res.status(500).json({
       success: false,
       message: 'Error al obtener los reactivos',
@@ -278,4 +285,3 @@ export const listaReactivos = async (req, res) => {
     });
   }
 };
-
