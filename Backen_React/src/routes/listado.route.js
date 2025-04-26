@@ -1,5 +1,6 @@
 import express from 'express';
 import Reactivos from '../models/registro.model.js';
+import User from '../models/user.model.js';
 
 const router = express.Router();
 
@@ -12,5 +13,23 @@ router.get('/reactivos', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+
+router.get('/usuarios', async (req, res) => {
+  try {
+    const users = await User.find({}, 'fullName controlNumber profilePic'); // Trae los dos campos en una sola consulta
+
+    const data = users.map(user => ({
+      fullName: user.fullName,
+      controlNumber: user.controlNumber,
+      profilePic: user.profilePic
+    }));
+
+    res.json(data); // Envía un solo JSON con nombre y número de control juntos
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 export default router;

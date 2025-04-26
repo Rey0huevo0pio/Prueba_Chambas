@@ -4,6 +4,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 
 const Inf_Readaptivos = () => {
   const [reactivos, setReactivos] = useState([]);
+  const [Usuaris, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { authUser } = useAuthStore();
@@ -43,6 +44,30 @@ const Inf_Readaptivos = () => {
     fetchReactivos();
   }, [authUser?.token]);
 
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        const response = await axios.get(
+          'http://192.168.100.19:5001/api/list/usuarios',
+          { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
+        );
+        setUsuarios(response.data.data || response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(`Error al cargar los Usuarios: ${err.response?.data?.message || err.message}`);
+        console.error("Error details:", err);
+        setLoading(false);
+      }
+    };
+  
+    fetchUsuarios();
+  }, [authUser?.token]);
+
+
+
+
+
+  
   const toggleFaq = (index) => {
     setActiveFaqIndex(activeFaqIndex === index ? null : index);
   };
@@ -105,6 +130,60 @@ const Inf_Readaptivos = () => {
   ))}
 </div>
   </section>
+
+  {/* Sección de Usuarios */}
+
+  <section className="py-12 px-6 md:px-24">
+  <h2 className="text-2xl font-bold mb-8 text-center">Lista de Usuarios</h2>
+  <div className="grid gap-4 sm:grid-cols-1">
+    {Usuaris.map((usuario) => (
+      <div key={usuario._id} className="group">
+        <input type="checkbox" id={`accordion-${usuario._id}`} className="hidden peer" />
+        <label 
+          htmlFor={`accordion-${usuario._id}`} 
+          className="flex justify-between items-center bg-white rounded-xl shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer"
+        >
+          <div className="flex items-center space-x-4">
+            {usuario.profilePic && (
+              <img
+                src={usuario.profilePic}
+                alt={usuario.fullName}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            )}
+            <div>
+              <h3 className="text-lg font-semibold">{usuario.fullName}</h3>
+              <p className="text-sm text-gray-600">{usuario.controlNumber}</p>
+            </div>
+          </div>
+          <svg 
+            className="w-5 h-5 text-gray-500 transition-transform duration-300 group-[.peer:checked+&]:rotate-180" 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 20 20" 
+            fill="currentColor"
+          >
+            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </label>
+        
+        <div className="max-h-0 overflow-hidden transition-all duration-300 peer-checked:max-h-96">
+          <div className="p-4 space-y-2">
+            {usuario.profilePic && (
+              <img
+                src={usuario.profilePic}
+                alt={usuario.fullName}
+                className="w-16 h-16 object-cover rounded-full mx-auto"
+              />
+            )}
+            <p className="text-sm text-center"><span className="font-medium">Nombre:</span> {usuario.fullName}</p>
+            <p className="text-sm text-center"><span className="font-medium">Número de control:</span> {usuario.controlNumber}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
+
 
   {/* Sección de FAQs - Ahora completamente en acordeón */}
   <section className="py-12 px-6 md:px-24 bg-white">
