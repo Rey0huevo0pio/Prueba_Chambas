@@ -11,7 +11,8 @@ import authRoutes from './routes/auth.route.js'
 import router from './routes/Registro.route.js'
 import uploadRoute from './routes/upload.route.js'
 import lisRoutes from './routes/listado.route.js'
-
+import upUser from './routes/uploadUsei.route.js'
+import upImag from './routes/user.route.js'
 
 import { connectDB } from "./lib/db.js";
 import { app, server } from "./lib/socket.js";
@@ -56,19 +57,25 @@ app.use(
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+
 // Rutas del sistema de autenticación
 app.use("/api/auth", authRoutes);
 app.use("/api", router);
 app.use("/api", uploadRoute);
+app.use("/api/usuario", upUser, upImag);
 app.use("/api/list", lisRoutes);
 
 
-// Crear directorio de uploads y audios si no existe
-const directories = ['uploads'];
+// Crear directorio de uploads si no existe
+const directories = [
+  'uploads',
+  'uploads/profile-pics'
+];
+
 directories.forEach((dir) => {
   const fullPath = path.join(__dirname, dir);
   if (!fs.existsSync(fullPath)) {
-    fs.mkdirSync(fullPath, { recursive: true }); // recursive: true para crear directorios anidados
+    fs.mkdirSync(fullPath, { recursive: true });
   }
 });
 

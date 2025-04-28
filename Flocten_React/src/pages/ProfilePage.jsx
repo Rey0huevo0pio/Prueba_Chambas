@@ -1,62 +1,60 @@
 import { useState } from "react";
+import axios from "axios";
 import { useAuthStore } from "../store/useAuthStore";
 import { Camera, Mail, User } from "lucide-react";
 
 const ProfilePage = () => {
-  const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
-  const [selectedImg, setSelectedImg] = useState(null);
+  const { authUser, updateProfilePicture } = useAuthStore();
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleImageUpload = async (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
   
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
+    setIsUpdatingProfile(true);
+    setError(null);
   
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      const compressedImage = await compressImage(base64Image);
-      setSelectedImg(compressedImage);
-      await updateProfile({ profilePic: compressedImage });
-    };
-  };
+    const formData = new FormData();
+    formData.append("image", file);
   
-  const compressImage = (base64) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = base64;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-  
-        // Define nuevo tamaño
-        const MAX_WIDTH = 300;
-        const MAX_HEIGHT = 300;
-        let width = img.width;
-        let height = img.height;
-  
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
+    try {
+      // Subir la imagen
+      const uploadRes = await axios.post(
+        "http://192.168.100.19:5001/api/usuario/upload", 
+        formData, 
+        {
+          headers: { "Content-Type": "multipart/form-data" },
         }
+      );
   
-        canvas.width = width;
-        canvas.height = height;
+      const imageUrl = uploadRes.data.imageUrl;
+      
+      // Actualizar el perfil con la nueva imagen
+      const updateRes = await axios.put(
+        `http://192.168.100.19:5001/api/usuario/upload/ProfilePic/${authUser._id}`,
+        { imageUrl }
+      );
   
-        ctx.drawImage(img, 0, 0, width, height);
-  
-        // Comprime la imagen al 70% de calidad
-        resolve(canvas.toDataURL("image/jpeg", 0.7));
-      };
-    });
+      // Actualizar el store con la nueva URL (incluyendo cache buster)
+      if (typeof updateProfilePicture === 'function') {
+        const updatedUser = updateRes.data.user;
+        await updateProfilePicture(updatedUser.profilePic);
+        
+        // Forzar recarga de la página para limpiar caché
+        window.location.reload();
+      } else {
+        console.error("updateProfilePicture no es una función");
+        setError("No se pudo actualizar la imagen. Intente nuevamente.");
+      }
+    } catch (err) {
+      console.error("Error al subir o actualizar imagen:", err);
+      setError(err.response?.data?.message || "Error al subir la imagen");
+    } finally {
+      setIsUpdatingProfile(false);
+    }
   };
+
   
 
   return (
@@ -64,17 +62,22 @@ const ProfilePage = () => {
       <div className="max-w-2xl mx-auto p-4 py-8">
         <div className="bg-base-300 rounded-xl p-6 space-y-8">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold ">Profile</h1>
+            <h1 className="text-2xl font-semibold">Profile</h1>
             <p className="mt-2">Your profile information</p>
           </div>
-          {/* avatar upload section */}
+          
+          {/* Avatar upload section */}
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
-              <img
-                src={selectedImg || authUser.profilePic || "/avatar.png"}
-                alt="Profile"
-                className="size-32 rounded-full object-cover border-4 "
-              />
+            <img
+  src={`${authUser?.profilePic || "/avatar.webp"}?t=${new Date().getTime()}`}
+  alt="Profile"
+  className="size-32 rounded-full object-cover border-4"
+  onError={(e) => {
+    e.target.src = "/avatar.webp";
+  }}
+  key={authUser?.profilePic} // Esto fuerza a React a recrear el componente cuando cambia la URL
+/>
               <label
                 htmlFor="avatar-upload"
                 className={`
@@ -90,42 +93,56 @@ const ProfilePage = () => {
                   type="file"
                   id="avatar-upload"
                   className="hidden"
-                  accept="image/*"
-                  onChange={handleImageUpload}
+                  accept="image/jpeg, image/png, image/gif"
+                  onChange={handleImageChange}
                   disabled={isUpdatingProfile}
                 />
               </label>
             </div>
             <p className="text-sm text-zinc-400">
-              {isUpdatingProfile ? "Uploading..." : "Click the camera icon to update your photo"}
+              {isUpdatingProfile 
+                ? "Uploading..." 
+                : "Click the camera icon to update your photo"}
             </p>
+            {error && (
+              <p className="text-sm text-red-500">{error}</p>
+            )}
           </div>
 
+          {/* User info section */}
           <div className="space-y-6">
             <div className="space-y-1.5">
               <div className="text-sm text-zinc-400 flex items-center gap-2">
                 <User className="w-4 h-4" />
                 Full Name
               </div>
-              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.fullName}</p>
+              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">
+                {authUser?.fullName || "N/A"}
+              </p>
             </div>
 
             <div className="space-y-1.5">
-            <div className="text-sm text-zinc-400 flex items-center gap-2">
-  <Mail className="w-4 h-4" />
-  Número de Control
-</div>
-<p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.controlNumber}</p>
-
+              <div className="text-sm text-zinc-400 flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                Número de Control
+              </div>
+              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">
+                {authUser?.controlNumber || "N/A"}
+              </p>
             </div>
           </div>
 
+          {/* Account info section */}
           <div className="mt-6 bg-base-300 rounded-xl p-6">
-            <h2 className="text-lg font-medium  mb-4">Account Information</h2>
+            <h2 className="text-lg font-medium mb-4">Account Information</h2>
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between py-2 border-b border-zinc-700">
                 <span>Member Since</span>
-                <span>{authUser.createdAt?.split("T")[0]}</span>
+                <span>
+                  {authUser?.createdAt 
+                    ? new Date(authUser.createdAt).toLocaleDateString() 
+                    : "N/A"}
+                </span>
               </div>
               <div className="flex items-center justify-between py-2">
                 <span>Account Status</span>
@@ -138,6 +155,5 @@ const ProfilePage = () => {
     </div>
   );
 };
+
 export default ProfilePage;
-
-

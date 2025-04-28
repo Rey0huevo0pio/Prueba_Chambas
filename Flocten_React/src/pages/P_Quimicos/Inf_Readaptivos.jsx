@@ -8,233 +8,315 @@ const Inf_Readaptivos = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { authUser } = useAuthStore();
+  const [activeFaqIndex, setActiveFaqIndex] = useState(null);
 
-  // Datos de ejemplo para FAQs (puedes cargarlos desde tu API si es necesario)
+  const toggleFaq = (index) => {
+    setActiveFaqIndex((prevIndex) => (prevIndex === index ? null : index));
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [reactivosRes, usuariosRes] = await Promise.all([
+          axios.get('http://192.168.100.19:5001/api/list/reactivos', {
+            headers: { 'Authorization': `Bearer ${authUser?.token}` }
+          }),
+          axios.get('http://192.168.100.19:5001/api/list/usuarios', {
+            headers: { 'Authorization': `Bearer ${authUser?.token}` }
+          })
+        ]);
+        
+        setReactivos(reactivosRes.data.data || reactivosRes.data);
+        setUsuarios(usuariosRes.data.data || usuariosRes.data);
+      } catch (err) {
+        setError(`Error al cargar los datos: ${err.response?.data?.message || err.message}`);
+        console.error("Error details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [authUser?.token]);
+
   const faqs = [
     {
       pregunta: "¿Cómo almacenar reactivos químicos correctamente?",
-      respuesta: "Deben guardarse en un lugar fresco, seco y bien ventilado, lejos de luz solar directa.",
+      respuesta: "Los reactivos deben guardarse en un lugar fresco, seco y bien ventilado, lejos de luz solar directa. Organícelos por compatibilidad química y mantenga los recipientes bien cerrados.",
       tags: ["almacenamiento", "seguridad"]
     },
     {
       pregunta: "¿Qué hacer en caso de derrame?",
-      respuesta: "Usar equipo de protección y seguir el protocolo de seguridad del laboratorio.",
-      tags: ["emergencia"]
+      respuesta: "1. Alertar a las personas cercanas\n2. Usar equipo de protección adecuado\n3. Contener el derrame con materiales absorbentes\n4. Seguir el protocolo de seguridad del laboratorio\n5. Reportar el incidente",
+      tags: ["emergencia", "protocolo"]
     }
   ];
 
-  const [activeFaqIndex, setActiveFaqIndex] = useState(null);
-
-  useEffect(() => {
-    const fetchReactivos = async () => {
-      try {
-        const response = await axios.get(
-          'http://192.168.100.19:5001/api/list/reactivos',
-          { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
-        );
-        setReactivos(response.data.data || response.data);
-        setLoading(false);
-      } catch (err) {
-        setError(`Error al cargar los reactivos: ${err.response?.data?.message || err.message}`);
-        console.error("Error details:", err);
-        setLoading(false);
-      }
-    };
+  if (loading) return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+      <p className="text-gray-600">Cargando información...</p>
+    </div>
+  );
   
-    fetchReactivos();
-  }, [authUser?.token]);
-
-  useEffect(() => {
-    const fetchUsuarios = async () => {
-      try {
-        const response = await axios.get(
-          'http://192.168.100.19:5001/api/list/usuarios',
-          { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
-        );
-        setUsuarios(response.data.data || response.data);
-        setLoading(false);
-      } catch (err) {
-        setError(`Error al cargar los Usuarios: ${err.response?.data?.message || err.message}`);
-        console.error("Error details:", err);
-        setLoading(false);
-      }
-    };
+  if (error) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="bg-red-50 border-l-4 border-red-500 p-4 max-w-md">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
   
-    fetchUsuarios();
-  }, [authUser?.token]);
-
-
-
-
-
-  
-  const toggleFaq = (index) => {
-    setActiveFaqIndex(activeFaqIndex === index ? null : index);
-  };
-
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Cargando reactivos...</p></div>;
-  if (error) return <div className="min-h-screen flex items-center justify-center"><p className="text-red-500">{error}</p></div>;
-  if (!reactivos.length) return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">No hay reactivos disponibles</p></div>;
+  if (!reactivos.length && !Usuaris.length) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 className="mt-2 text-lg font-medium text-gray-900">No hay información disponible</h3>
+        <p className="mt-1 text-gray-500">No se encontraron reactivos ni usuarios registrados.</p>
+      </div>
+    </div>
+  );
 
   return (
-<div className="bg-gray-50 min-h-screen pt-24">
-  {/* Sección de Reactivos */}
-  <section className="py-12 px-6 md:px-24">
-    <h2 className="text-2xl font-bold mb-8 text-center">Inventario de Reactivos</h2>
-    <div className="grid gap-4 sm:grid-cols-1">
-  {reactivos.map((reactivo) => (
-    <div key={reactivo._id} className="group">
-      <input type="checkbox" id={`accordion-${reactivo._id}`} className="hidden peer" />
-      <label 
-        htmlFor={`accordion-${reactivo._id}`} 
-        className="flex justify-between items-center bg-white rounded-xl shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer"
-      >
-        <div className="flex items-center space-x-4">
-        
-          <div>
-            <h3 className="text-lg font-semibold">{reactivo.codigo}</h3>
-            <p className="text-sm text-gray-600">{reactivo.nombre}</p>
-          </div>
+    <div className="bg-gray-50 min-h-screen pt-24 pb-12">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-gray-900 text-center">
+            Gestión de Laboratorio
+          </h1>
+          <p className="mt-2 text-sm text-gray-600 text-center">
+            Inventario de reactivos y usuarios registrados
+          </p>
         </div>
-        <svg 
-          className="w-5 h-5 text-gray-500 transition-transform duration-300 group-[.peer:checked+&]:rotate-180" 
-          xmlns="http://www.w3.org/2000/svg" 
-          viewBox="0 0 20 20" 
-          fill="currentColor"
-        >
-          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-        </svg>
-      </label>
-      
-      <div className="max-h-0 overflow-hidden transition-all duration-300 peer-checked:max-h-96">
-        <div className="p-4 space-y-2">
-        {reactivo.imagenReactivo && (
-            <img
-              src={reactivo.imagenReactivo}
-              alt={reactivo.codigo}
-              className="w-16 h-16 object-contain rounded-lg"
-            />
-          )}
-          <p className="text-sm"><span className="font-medium">Fórmula:</span> {reactivo.formula}</p>
-          <p className="text-sm"><span className="font-medium">Cantidad:</span> {reactivo.cantidad}</p>
-          <p className="text-sm"><span className="font-medium">Lote:</span> {reactivo.numeroLote}</p>
-          <p className="text-sm"><span className="font-medium">Concentración:</span> {reactivo.concentracion}</p>
-          {reactivo.descripcion && (
-            <p className="text-sm text-gray-700 mt-3 pt-3 border-t border-gray-100">
-              {reactivo.descripcion}
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
-  </section>
+      </header>
 
-  {/* Sección de Usuarios */}
-
-  <section className="py-12 px-6 md:px-24">
-  <h2 className="text-2xl font-bold mb-8 text-center">Lista de Usuarios</h2>
-  <div className="grid gap-4 sm:grid-cols-1">
-    {Usuaris.map((usuario) => (
-      <div key={usuario._id} className="group">
-        <input type="checkbox" id={`accordion-${usuario._id}`} className="hidden peer" />
-        <label 
-          htmlFor={`accordion-${usuario._id}`} 
-          className="flex justify-between items-center bg-white rounded-xl shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer"
-        >
-          <div className="flex items-center space-x-4">
-            {usuario.profilePic && (
-              <img
-                src={usuario.profilePic}
-                alt={usuario.fullName}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-            )}
-            <div>
-              <h3 className="text-lg font-semibold">{usuario.fullName}</h3>
-              <p className="text-sm text-gray-600">{usuario.controlNumber}</p>
-            </div>
-          </div>
-          <svg 
-            className="w-5 h-5 text-gray-500 transition-transform duration-300 group-[.peer:checked+&]:rotate-180" 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 20 20" 
-            fill="currentColor"
-          >
-            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-        </label>
-        
-        <div className="max-h-0 overflow-hidden transition-all duration-300 peer-checked:max-h-96">
-          <div className="p-4 space-y-2">
-            {usuario.profilePic && (
-              <img
-                src={usuario.profilePic}
-                alt={usuario.fullName}
-                className="w-16 h-16 object-cover rounded-full mx-auto"
-              />
-            )}
-            <p className="text-sm text-center"><span className="font-medium">Nombre:</span> {usuario.fullName}</p>
-            <p className="text-sm text-center"><span className="font-medium">Número de control:</span> {usuario.controlNumber}</p>
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-</section>
-
-
-  {/* Sección de FAQs - Ahora completamente en acordeón */}
-  <section className="py-12 px-6 md:px-24 bg-white">
-    <h2 className="text-2xl font-bold mb-8 text-center">Preguntas Frecuentes</h2>
-    
-    <div className="max-w-4xl mx-auto space-y-4">
-      {faqs.map((faq, index) => (
-        <div key={index} className="bg-gray-50 rounded-xl shadow-md overflow-hidden border border-gray-200">
-          <button 
-            className="w-full flex justify-between items-center p-6 text-left hover:bg-gray-100 transition-colors"
-            onClick={() => toggleFaq(index)}
-          >
-            <h3 className="text-lg font-semibold text-left flex-1">{faq.pregunta}</h3>
-            <svg
-              className={`w-5 h-5 ml-4 flex-shrink-0 transform transition-transform duration-200 ${activeFaqIndex === index ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          
-          {activeFaqIndex === index && (
-            <div className="px-6 pb-6 pt-0 text-gray-600">
-              <div className="flex items-start">
-                <div className="bg-blue-100 p-2 rounded-lg mr-4 mt-1">
-                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sección de Reactivos */}
+          <section className="w-full lg:w-1/2">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
+                <h2 className="text-xl font-bold text-white flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                   </svg>
-                </div>
-                <div>
-                  <p className="mb-3">{faq.respuesta}</p>
-                  {faq.tags && (
-                    <div className="flex flex-wrap gap-2">
-                      {faq.tags.map((tag, i) => (
-                        <span key={i} className="px-2 py-1 bg-gray-200 text-xs rounded-full text-gray-600">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                  Inventario de Reactivos
+                </h2>
+              </div>
+              <div className="p-6">
+                {reactivos.length > 0 ? (
+                  <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+                    {reactivos.map((reactivo) => (
+                      <div key={`reactivo-${reactivo._id}`} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        <div className="p-4">
+                          <div className="flex items-start space-x-4">
+                            {reactivo.imagenReactivo ? (
+                              <img
+                                src={reactivo.imagenReactivo}
+                                alt={reactivo.codigo}
+                                className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                              />
+                            ) : (
+                              <div className="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                </svg>
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-800">{reactivo.codigo}</h3>
+                              <p className="text-sm text-gray-600">{reactivo.nombre}</p>
+                              <div className="mt-2 flex flex-wrap gap-1">
+                                <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                  {reactivo.cantidad} unidades
+                                </span>
+                                {reactivo.concentracion && (
+                                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                                    {reactivo.concentracion}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-3 pt-3 border-t border-gray-100">
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                              <div>
+                                <p className="text-gray-500">Fórmula</p>
+                                <p className="font-medium">{reactivo.formula || 'N/A'}</p>
+                              </div>
+                              <div>
+                                <p className="text-gray-500">Lote</p>
+                                <p className="font-medium">{reactivo.numeroLote || 'N/A'}</p>
+                              </div>
+                            </div>
+                            
+                            {reactivo.descripcion && (
+                              <div className="mt-2">
+                                <p className="text-gray-500">Descripción</p>
+                                <p className="text-sm text-gray-700">{reactivo.descripcion}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">No hay reactivos registrados</h3>
+                    <p className="mt-1 text-sm text-gray-500">No se encontraron reactivos en el inventario.</p>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          </section>
+
+          {/* Sección de Usuarios */}
+          <section className="w-full lg:w-1/2">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-4">
+                <h2 className="text-xl font-bold text-white flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  Lista de Usuarios
+                </h2>
+              </div>
+              <div className="p-6">
+                {Usuaris.length > 0 ? (
+                  <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+                    {Usuaris.map((usuario) => (
+                      <div key={`usuario-${usuario._id || usuario.controlNumber}`} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        <div className="p-4">
+                          <div className="flex items-center space-x-4">
+                            {usuario.profilePic ? (
+                              <img
+                                src={usuario.profilePic}
+                                alt={usuario.fullName}
+                                className="w-16 h-16 rounded-full object-cover border-2 border-purple-200"
+                              />
+                            ) : (
+                              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center border-2 border-purple-200">
+                                <svg className="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-800">{usuario.fullName}</h3>
+                              <p className="text-sm text-gray-600">{usuario.controlNumber}</p>
+                              <div className="mt-2">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                  Usuario
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-3 pt-3 border-t border-gray-100">
+                            <div className="text-sm">
+                              <p className="text-gray-500">Información adicional</p>
+                              <p className="text-gray-700 mt-1">Número de control: {usuario.controlNumber}</p>
+                              {/* Puedes agregar más campos de usuario aquí si están disponibles */}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">No hay usuarios registrados</h3>
+                    <p className="mt-1 text-sm text-gray-500">No se encontraron usuarios en el sistema.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
         </div>
-      ))}
+
+        {/* Sección de FAQs */}
+        <section className="mt-12">
+          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="bg-gradient-to-r from-green-600 to-green-800 px-6 py-4">
+              <h2 className="text-xl font-bold text-white flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Preguntas Frecuentes
+              </h2>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                {faqs.map((faq, index) => (
+                  <div key={`faq-${index}`} className="border border-gray-200 rounded-lg overflow-hidden">
+                    <button 
+                      className={`w-full flex justify-between items-center p-4 text-left ${activeFaqIndex === index ? 'bg-green-50' : 'hover:bg-gray-50'} transition-colors`}
+                      onClick={() => toggleFaq(index)}
+                    >
+                      <h3 className="font-medium text-gray-900 flex-1">{faq.pregunta}</h3>
+                      <svg
+                        className={`w-5 h-5 ml-4 flex-shrink-0 transform transition-transform duration-200 ${activeFaqIndex === index ? 'rotate-180 text-green-600' : 'text-gray-400'}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    
+                    {activeFaqIndex === index && (
+                      <div className="px-4 pb-4">
+                        <div className="flex items-start">
+                          <div className="bg-green-100 p-2 rounded-lg mr-3 mt-1">
+                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-gray-700 whitespace-pre-line">{faq.respuesta}</p>
+                            {faq.tags && faq.tags.length > 0 && (
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {faq.tags.map((tag) => (
+                                  <span key={`tag-${tag}`} className="px-2 py-1 bg-gray-100 text-xs rounded-full text-gray-600">
+                                    #{tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
-  </section>
-</div>
   );
 };
 

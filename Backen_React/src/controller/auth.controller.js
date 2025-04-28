@@ -1,6 +1,5 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
-
 import bcrypt from "bcryptjs";
 
 
@@ -58,47 +57,47 @@ export const login = async (req, res) => {
   }
 };
 
-
-
-
 export const logout = async (req, res) => {
   // Borrar la cookie del token JWT
   res.cookie("jwt", "", { maxAge: 0 });
   res.status(200).json({ message: "Logged out successfully" });
 };
 
-
-
-export const updateProfile = async (req, res) => {
+export const updateProfilePic = async (req, res) => {
   try {
-    const { profilePic } = req.body;
     const userId = req.user._id;
+    const user = await User.findById(userId);
 
-    if (!profilePic) {
-      return res.status(400).json({ message: "Profile pic is required" });
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    // Subir la imagen a Cloudinary en una carpeta específica
-    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
-      folder: "IcnPerfil", // Cambia esto por el nombre de la carpeta deseada
-      public_id: `perfil_${userId}_${Date.now()}`, // Nombre único basado en el ID del usuario y la fecha
-      overwrite: true, // Permite actualizar la imagen sin crear duplicados
+    if (!req.file) {
+      return res.status(400).json({ error: "No se proporcionó ninguna imagen" });
+    }
+
+    // Eliminar la imagen anterior si existe
+    if (user.profilePic) {
+      const oldImagePath = path.join(__dirname, "..", user.profilePic);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+    }
+
+    // Guardar la nueva imagen
+    const imagePath = `/uploads/profile-pics/${req.file.filename}`;
+    user.profilePic = imagePath;
+    await user.save();
+
+    res.status(200).json({
+      message: "Imagen de perfil actualizada correctamente",
+      profilePic: imagePath,
     });
-
-    // Actualizar la imagen de perfil en la base de datos
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { profilePic: uploadResponse.secure_url },
-      { new: true }
-    );
-
-    res.status(200).json(updatedUser);
   } catch (error) {
-    console.error("Error en updateProfile:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error al actualizar la imagen de perfil:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
-
 
 export const checkAuth = (req, res) => {
   res.status(200).json(req.user);
