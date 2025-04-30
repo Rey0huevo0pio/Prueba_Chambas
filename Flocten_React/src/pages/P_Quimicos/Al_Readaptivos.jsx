@@ -187,8 +187,8 @@ const Al_Readaptivos = () => {
     <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start">
       <div className="w-full max-w-5xl bg-base-100 rounded-xl shadow-2xl overflow-hidden">
         {/* Encabezado */}
-        <div className="bg-gradient-to-r from-primary to-secondary p-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="bg-gradient-to-r from-primary to-base-content p-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-1">
             <div className="flex items-center gap-4">
               <div className="avatar">
                 <div className="w-16 rounded-full ring ring-base-100 ring-offset-base-100 ring-offset-2">
@@ -199,10 +199,11 @@ const Al_Readaptivos = () => {
                 Registro de Nuevo Reactivo
               </h1>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="badge badge-lg badge-accent font-mono max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
-                Código: {codigo}
-              </div>
+            <div className="flex items-center gap-2">
+            <div className="px-5 py-2 bg-blue-50 rounded-full inline-flex items-center gap-2 border border-blue-100">
+  <span className="text-blue-600 text-base font-black">Codigo:</span>
+  <span className="font-mono font-bold text-blue-800">{codigo}</span>
+</div>
               <button onClick={generarCodigo} className="btn btn-outline btn-primary">
                 <FaSync className="mr-2" /> Refrescar Código
               </button>
@@ -227,7 +228,7 @@ const Al_Readaptivos = () => {
         </div>
 
         {/* Contenido principal */}
-        <div className="p-6 md:p-8 space-y-6">
+        <div className="p-6 md:p-8 space-y-6 font-bold">
           {/* Sección de imágenes */}
           <div className="flex flex-col md:flex-row justify-center items-center gap-8 mb-6 bg-base-200 p-6 rounded-box">
             <ImageDisplay

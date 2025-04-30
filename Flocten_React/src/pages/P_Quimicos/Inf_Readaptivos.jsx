@@ -90,9 +90,13 @@ const Inf_Readaptivos = () => {
   );
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-24 pb-12">
+
+    
+    <div className="bg-gradient-to-br min-h-screen pt-24 pb-12">
+
+      
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-gradient-to-r  shadow-sm  from-primary to-base-content">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-gray-900 text-center">
             Gestión de Laboratorio
@@ -125,11 +129,14 @@ const Inf_Readaptivos = () => {
                         <div className="p-4">
                           <div className="flex items-start space-x-4">
                             {reactivo.imagenReactivo ? (
-                              <img
-                                src={reactivo.imagenReactivo}
-                                alt={reactivo.codigo}
-                                className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                              />
+                       <div className="relative group">
+                       <img
+                         src={reactivo.imagenReactivo}
+                         alt={reactivo.codigo}
+                         className="w-32 h-32 object-contain rounded-lg border border-gray-200 p-1 bg-white shadow-sm group-hover:shadow-md transition-all duration-300"
+                       />
+                       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/50 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity duration-300"></div>
+                     </div>
                             ) : (
                               <div className="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
                                 <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

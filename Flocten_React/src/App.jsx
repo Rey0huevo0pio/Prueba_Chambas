@@ -73,7 +73,7 @@ const App = () => {
     );
 
   return (
-    <div data-theme={theme} className="text-secondary">
+    <div data-theme={theme} className="text-base-content">
       <Navbar />
 
       <Routes>
