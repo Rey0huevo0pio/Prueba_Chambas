@@ -1,11 +1,11 @@
 import { HAZARD_PICTOGRAMS } from '../../constants/hazardPictograms';
 
 const HazardPictograms = ({ selectedPictograms, onPictogramToggle }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-700 mb-2">Pictogramas de Peligro</label>
+  <div className='fond-bold text-base-content '>
+    <label className="block text-lg font-bold text-base-content mb-2">Pictogramas de Peligro</label>
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       {HAZARD_PICTOGRAMS.map((pictogram) => (
-        <div key={pictogram.id} className="flex items-center">
+        <div key={pictogram.id} className="flex items-center  ">
           <input
             type="checkbox"
             id={`pictogram-${pictogram.id}`}

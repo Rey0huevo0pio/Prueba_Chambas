@@ -1,8 +1,8 @@
 
 const ReactiveAdditionalInfo = ({ reactiveData, onInputChange }) => (
-    <div className="space-y-4">
+    <div className="space-y-4 font-bold   ">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Número de Lote</label>
+        <label className="block text-lg font-bold text-base-content">Número de Lote</label>
         <input
           type="text"
           name="numeroLote"
@@ -13,7 +13,7 @@ const ReactiveAdditionalInfo = ({ reactiveData, onInputChange }) => (
       </div>
   
       <div>
-        <label className="block text-sm font-medium text-gray-700">Concentración</label>
+        <label className="block text-lg font-bold text-base-content">Concentración</label>
         <input
           type="text"
           name="concentracion"
@@ -24,7 +24,7 @@ const ReactiveAdditionalInfo = ({ reactiveData, onInputChange }) => (
       </div>
   
       <div>
-        <label className="block text-sm font-medium text-gray-700">Fecha de Registro</label>
+        <label className="block text-lg font-bold text-base-content">Fecha de Registro</label>
         <input
           type="text"
           value={reactiveData.createdAt ? new Date(reactiveData.createdAt).toLocaleDateString() : 'No disponible'}

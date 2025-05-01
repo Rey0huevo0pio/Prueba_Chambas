@@ -47,8 +47,13 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
   }
 
   return (
+
+    /*  min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start
+     */
+
+    <div className=" bg-gradient-to-br from-base-100 to-base-200">
   
-    <div className="container mx-auto pt-28 max-w-7xl">
+    <div className="container mx-auto pt-28 max-w-7xl font-bold ">
 
       <h2 className="text-2xl font-bold mb-6">Editar Reactivo</h2>
       
@@ -78,7 +83,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
       )}
 
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 ">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ReactiveBasicInfo 
             reactiveData={reactiveData} 
@@ -160,6 +165,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
           </button>
         </div>
       </form>
+    </div>
     </div>
   );
 };

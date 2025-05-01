@@ -184,8 +184,8 @@ const Al_Readaptivos = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start">
-      <div className="w-full max-w-5xl bg-base-100 rounded-xl shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start"  >
+      <div className="w-full max-w-5xl bg-base-100 rounded-xl shadow-2xl overflow-hidden"  >
         {/* Encabezado */}
         <div className="bg-gradient-to-r from-primary to-base-content p-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-1">

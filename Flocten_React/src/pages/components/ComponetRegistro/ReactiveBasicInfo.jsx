@@ -1,7 +1,7 @@
 const ReactiveBasicInfo = ({ reactiveData, onInputChange }) => (
-    <div className="space-y-4">
+    <div className="space-y-4 font-bold">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Código*</label>
+        <label className="block text-lg font-bold text-base-content">Código*</label>
         <input
           type="text"
           name="codigo"
@@ -13,7 +13,7 @@ const ReactiveBasicInfo = ({ reactiveData, onInputChange }) => (
       </div>
   
       <div>
-        <label className="block text-sm font-medium text-gray-700">Nombre*</label>
+        <label className="block text-lg font-bold text-base-content">Nombre*</label>
         <input
           type="text"
           name="nombre"
@@ -25,7 +25,7 @@ const ReactiveBasicInfo = ({ reactiveData, onInputChange }) => (
       </div>
   
       <div>
-        <label className="block text-sm font-medium text-gray-700">Fórmula</label>
+        <label className="block text-lg font-bold text-base-content">Fórmula</label>
         <input
           type="text"
           name="formula"
@@ -36,7 +36,7 @@ const ReactiveBasicInfo = ({ reactiveData, onInputChange }) => (
       </div>
   
       <div>
-        <label className="block text-sm font-medium text-gray-700">Cantidad</label>
+        <label className="block text-lg font-bold text-base-content">Cantidad</label>
         <input
           type="text"
           name="cantidad"

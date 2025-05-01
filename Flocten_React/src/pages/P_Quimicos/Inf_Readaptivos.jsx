@@ -90,11 +90,11 @@ const Inf_Readaptivos = () => {
   );
 
   return (
-
+/* className=min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start*/
     
-    <div className="bg-gradient-to-br min-h-screen pt-24 pb-12">
+    <div className="bg-gradient-to-br from-base-100 to-base-200 min-h-screen pt-24 pb-12 ">
 
-      
+
       {/* Header */}
       <header className="bg-gradient-to-r  shadow-sm  from-primary to-base-content">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -109,7 +109,7 @@ const Inf_Readaptivos = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-8 font-bold">
           {/* Sección de Reactivos */}
           <section className="w-full lg:w-1/2">
             <div className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -215,11 +215,14 @@ const Inf_Readaptivos = () => {
                         <div className="p-4">
                           <div className="flex items-center space-x-4">
                             {usuario.profilePic ? (
+                            <div className="relative group">
                               <img
                                 src={usuario.profilePic}
                                 alt={usuario.fullName}
-                                className="w-16 h-16 rounded-full object-cover border-2 border-purple-200"
-                              />
+                                className="w-32 h-32 object-cover rounded-lg border border-gray-200 p-1 bg-white shadow-sm group-hover:shadow-md transition-all duration-300"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/50 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity duration-300"></div>
+                                </div>
                             ) : (
                               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center border-2 border-purple-200">
                                 <svg className="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,7 +1,7 @@
 //TextAreaField.jsx
 const TextAreaField = ({ label, name, value, onChange, rows = 3 }) => (
     <div>
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label className="block text-lg font-bold text-base-content">{label}</label>
       <textarea
         name={name}
         value={value}
