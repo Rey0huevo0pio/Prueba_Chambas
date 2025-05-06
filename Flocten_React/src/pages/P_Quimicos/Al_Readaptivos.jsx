@@ -332,7 +332,7 @@ const Al_Readaptivos = () => {
             />
       
             {/* Primeros auxilios y manejo seguro */}
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-0.5">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-10">
               <CustomFormInput 
                 label="Primeros Auxilios" 
                 name="primerosAuxilios"

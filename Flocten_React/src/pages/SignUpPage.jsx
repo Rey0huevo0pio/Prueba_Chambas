@@ -24,6 +24,25 @@ const SignUpPage = () => {
     if (!formData.password) return toast.error("Password is required");
     if (formData.password.length < 6) return toast.error("Password must be at least 6 characters");
 
+       // Validaciones específicas para el número de control
+       const controlNumberStr = formData.controlNumber.toString();
+    
+       // Solo dígitos
+       if (!/^\d+$/.test(controlNumberStr)) {
+         return toast.error("Control number must contain only digits");
+       }
+       
+       // Longitud entre 10 y 12 caracteres
+       if (controlNumberStr.length < 10 || controlNumberStr.length > 12) {
+         return toast.error("Control number must be between 10 and 12 digits");
+       }
+       
+       // Prefijo requerido
+       const requiredPrefix = "511622030";
+       if (!controlNumberStr.startsWith(requiredPrefix)) {
+         return toast.error(`Control number must start with ${requiredPrefix}`);
+       }
+
     return true;
   };
 
@@ -31,6 +50,13 @@ const SignUpPage = () => {
     e.preventDefault();
     const success = validateForm();
     if (success === true) signup(formData);
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
@@ -69,27 +95,25 @@ const SignUpPage = () => {
             </div>
 
             <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Control Number</span>
+            <label htmlFor="controlNumber" className="block text-sm font-medium">
+                Control Number
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="size-5 text-base-content/40" />
-                </div>
+                <MessageSquare className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
+                  id="controlNumber"
+                  name="controlNumber"
                   type="text"
-                  className="input input-bordered w-full pl-10"
-                  placeholder="e.g., 12345678"
                   value={formData.controlNumber}
-                  onChange={(e) => {
-                    // Solo acepta dígitos
-                    const value = e.target.value;
-                    if (/^\d*$/.test(value)) {
-                      setFormData({ ...formData, controlNumber: value });
-                    }
-                  }}
+                  onChange={handleChange}
+                  className="pl-10 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="511622030XX"
+                  maxLength={12}
                 />
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Must start with 511622030 and be 10-12 digits long
+              </p>
             </div>
 
             <div className="form-control">

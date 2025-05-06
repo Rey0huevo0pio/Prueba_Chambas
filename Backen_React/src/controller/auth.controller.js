@@ -6,17 +6,47 @@ import bcrypt from "bcryptjs";
 export const signup = async (req, res) => {
   const { fullName, controlNumber, password } = req.body;
   try {
+    // Validar campos requeridos
     if (!fullName || !controlNumber || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
+
+    // Validar longitud de la contraseña
     if (password.length < 6) {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
-    const existingUser = await User.findOne({ controlNumber });
-    if (existingUser) return res.status(400).json({ message: "Control number already exists" });
 
+    // Validar formato del número de control
+    const controlNumberStr = controlNumber.toString();
+    
+    // Validar longitud (10-12 caracteres)
+    if (controlNumberStr.length < 10 || controlNumberStr.length > 12) {
+      return res.status(400).json({ 
+        message: "Control number must be between 10 and 12 digits" 
+      });
+    }
+    
+    // Validar que los primeros 9 dígitos sean "511622030"
+    const requiredPrefix = "511622030";
+    if (!controlNumberStr.startsWith(requiredPrefix)) {
+      return res.status(400).json({ 
+        message: `Control number must start with ${requiredPrefix}` 
+      });
+    }
+
+    // Verificar si el número de control ya existe
+    const existingUser = await User.findOne({ controlNumber });
+    if (existingUser) {
+      return res.status(400).json({ message: "Control number already exists" });
+    }
+
+    // Crear el nuevo usuario
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ fullName, controlNumber, password: hashedPassword });
+    const newUser = new User({ 
+      fullName, 
+      controlNumber, 
+      password: hashedPassword 
+    });
     await newUser.save();
 
     // Generar token y devolverlo
