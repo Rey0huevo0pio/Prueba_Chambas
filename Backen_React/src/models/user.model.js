@@ -21,7 +21,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    
+    PermisosEx: {
+      type: {
+        lectura: { type: Boolean, default: false },
+        registro: { type: Boolean, default: false },
+        modificacion: { type: Boolean, default: false },
+        eliminacion: { type: Boolean, default: false }
+      },
+      required: true,
+      default: () => ({}) // Esto asegura que cada nuevo usuario tenga un objeto de permisos
+    }
   },
+
+  
   { timestamps: true }
 );
 

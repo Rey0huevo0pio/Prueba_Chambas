@@ -9,6 +9,8 @@ import HazardPhrases from '../components/ComponetRegistro/HazardPhrases';
 
 import { useReactiveForm } from '../hooks/hooksRegistro/useReactiveForm';
 
+
+
 const EditReactiveForm = ({ reactiveId, onClose }) => {
   const {
     // Estados

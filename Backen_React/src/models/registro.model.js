@@ -1,5 +1,6 @@
 //  Reactivos.model.js
 import mongoose from "mongoose";
+import { type } from "os";
 
 const  ReactivosSchema = new mongoose.Schema(
   {
@@ -62,8 +63,7 @@ const  ReactivosSchema = new mongoose.Schema(
     frasesPeligro:{
         require: true,
       type: [String],
-    },
-
+    }
 
   },
 

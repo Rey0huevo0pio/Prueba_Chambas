@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useAuthStore } from "../store/useAuthStore";
 import { Camera, Mail, User } from "lucide-react";
+import Permisos from './ComponenAdmin/Permisos'
+
 
 const ProfilePage = () => {
   const { authUser, updateProfilePicture } = useAuthStore();
@@ -21,7 +23,7 @@ const ProfilePage = () => {
     try {
       // Subir la imagen
       const uploadRes = await axios.post(
-        "http://192.168.100.19:5001/api/usuario/upload", 
+        "http://192.168.106.102:5001/api/usuario/upload", 
         formData, 
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -32,7 +34,7 @@ const ProfilePage = () => {
       
       // Actualizar el perfil con la nueva imagen
       const updateRes = await axios.put(
-        `http://192.168.100.19:5001/api/usuario/upload/ProfilePic/${authUser._id}`,
+        `http://192.168.106.102:5001/api/usuario/upload/ProfilePic/${authUser._id}`,
         { imageUrl }
       );
   
@@ -58,14 +60,22 @@ const ProfilePage = () => {
   
 
   return (
-    <div className="h-screen pt-20">
-      <div className="max-w-2xl mx-auto p-4 py-8">
-        <div className="bg-base-300 rounded-xl p-6 space-y-8">
-          <div className="text-center">
+    <div className="max-h-full pt-20">
+   <div className="max-w-full mx-auto p-4 py-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div className="bg-base-300 rounded-xl p-6 space-y-8 w-full max-w-5xl max-h-full">
+
+    <Permisos/>
+
+
+
+  </div>
+ 
+        <div className="bg-base-300 rounded-xl p-6 space-y-8 max-h-5xl max-h-fit ">
+          <div className="text-center ">
             <h1 className="text-2xl font-semibold">Profile</h1>
             <p className="mt-2">Your profile information</p>
           </div>
-          
+        
           {/* Avatar upload section */}
           <div className="flex flex-col items-center gap-4">
             <div className="relative">

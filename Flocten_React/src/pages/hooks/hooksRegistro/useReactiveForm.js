@@ -40,7 +40,7 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
     const fetchReactiveData = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.100.19:5001/api/reactivos/${reactiveId}`,
+          `http://192.168.106.102:5001/api/reactivos/${reactiveId}`,
           { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
         );
         setReactiveData(response.data.data || response.data);
@@ -64,7 +64,7 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
     setSearchLoading(true);
     try {
       const response = await axios.get(
-        `http://192.168.100.19:5001/api/reactivos/search?term=${searchTerm}`,
+        `http://192.168.106.102:5001/api/reactivos/search?term=${searchTerm}`,
         { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
       );
       setSearchResults(response.data.data || response.data);

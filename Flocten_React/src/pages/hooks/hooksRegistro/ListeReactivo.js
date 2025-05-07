@@ -63,7 +63,7 @@ export const useReactiveList = () => {
   const deleteReactive = async (codigo) => {
     try {
       await axios.delete(
-        `http://192.168.100.19:5001/api/reactivos/${codigo}`,
+        `http://192.168.106.102:5001/api/reactivos/${codigo}`,
         { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
       );
       refreshList();

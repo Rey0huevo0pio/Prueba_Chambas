@@ -13,6 +13,7 @@ import uploadRoute from './routes/upload.route.js'
 import lisRoutes from './routes/listado.route.js'
 import upUser from './routes/uploadUsei.route.js'
 import upImag from './routes/user.route.js'
+import userRoutes from './routes/users.route.js'
 
 import { connectDB } from "./lib/db.js";
 import { app, server } from "./lib/socket.js";
@@ -64,6 +65,8 @@ app.use("/api", router);
 app.use("/api", uploadRoute);
 app.use("/api/usuario", upUser, upImag);
 app.use("/api/list", lisRoutes);
+app.use("/api/usuario/Permiss", userRoutes)
+
 
 
 // Crear directorio de uploads si no existe
@@ -83,3 +86,6 @@ server.listen(PORT, () => {
   console.log("Server running on PORT:", PORT);
   connectDB();
 });
+
+
+

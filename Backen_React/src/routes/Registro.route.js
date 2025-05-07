@@ -9,17 +9,19 @@ import {
 
 } from '../controller/Registro.controller.js';
 
+import { checkPermissions } from '../middleware/checkPermissions.js';
+
 const router = express.Router();
 
 // Rutas para reactivos
-router.post('/reactivos', Registro_Reactivo);
-router.get('/reactivos/search', buscarReactivos);
-router.get('/reactivos/:codigo', obtenerReactivoPorCodigo);
+router.post('/reactivos', checkPermissions({ registro: true }), Registro_Reactivo);
+router.get('/reactivos/search', checkPermissions({ registro: true }), buscarReactivos);
+router.get('/reactivos/:codigo', checkPermissions({ registro: true }), obtenerReactivoPorCodigo);
 
-router.put('/reactivos/:codigo', actualizarReactivo);
+router.put('/reactivos/:codigo', checkPermissions({ registro: true }), actualizarReactivo);
 
 
-router.delete('/reactivos/:codigo', eliminarReactivo);
+router.delete('/reactivos/:codigo', checkPermissions({ registro: true }), eliminarReactivo);
 
 
 export default router;
