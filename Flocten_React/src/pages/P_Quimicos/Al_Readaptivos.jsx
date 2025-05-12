@@ -128,7 +128,7 @@ const Al_Readaptivos = () => {
       console.log("Datos a enviar:", dataToSend);
 
       const response = await axios.post(
-        "http://192.168.100.19:5001/api/reactivos", 
+        "http://192.168.106.102:5001/api/reactivos", 
         dataToSend,
         {
           headers: {
@@ -183,9 +183,10 @@ const Al_Readaptivos = () => {
     );
   }
 
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start"  >
-      <div className="w-full max-w-5xl bg-base-100 rounded-xl shadow-2xl overflow-hidden"  >
+    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start" >
+      <div className=" max-w-5xl bg-base-100 rounded-xl shadow-2xl overflow-hidden"  >
         {/* Encabezado */}
         <div className="bg-gradient-to-r from-primary to-base-content p-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-1">
@@ -269,9 +270,9 @@ const Al_Readaptivos = () => {
           )}
 
           {/* Formulario */}
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8 ">
             {/* Sección 1: Nombre y fórmula */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-11">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-11 max-w-full">
               <CustomFormInput 
                 label="Nombre del Reactivo" 
                 name="nombre"
@@ -293,7 +294,7 @@ const Al_Readaptivos = () => {
             </div>
       
             {/* Sección 2: Cantidad, lote y concentración */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 ">
               <CustomFormInput 
                 label="Cantidad" 
                 name="cantidad"
@@ -320,6 +321,11 @@ const Al_Readaptivos = () => {
               />
             </div>
       
+      
+            {/* Primeros auxilios y manejo seguro */}
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-10 ml-1 max-w-full ">
+
+
             {/* Descripción */}
             <CustomFormInput 
               label="Descripción" 
@@ -329,17 +335,16 @@ const Al_Readaptivos = () => {
               value={formData.descripcion}
               onChange={handleChange}
               error={errors.descripcion}
+             customClass="min-h-40 min-w-full"
             />
-      
-            {/* Primeros auxilios y manejo seguro */}
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-10">
+
               <CustomFormInput 
                 label="Primeros Auxilios" 
                 name="primerosAuxilios"
                 placeholder="Procedimiento en caso de exposición o emergencia"
                 textarea 
                 required 
-                customClass="min-h-40"
+                customClass="min-h-40 min-w-full"
                 value={formData.primerosAuxilios}
                 onChange={handleChange}
                 error={errors.primerosAuxilios}
@@ -350,15 +355,16 @@ const Al_Readaptivos = () => {
                 placeholder="Instrucciones para manejo seguro, EPP requerido..."
                 textarea 
                 required 
-                customClass="min-h-40"
+                customClass="min-h-40 min-w-full"
                 value={formData.manejoSeguro}
                 onChange={handleChange}
                 error={errors.manejoSeguro}
+                
               />
             </div>
       
             {/* Información de peligros */}
-            <div className="collapse collapse-plus bg-base-200">
+            <div className="collapse collapse-plus bg-base-200 ">
               <input type="checkbox" defaultChecked />
               <div className="collapse-title text-xl font-medium flex items-center">
                 <FaInfoCircle className="mr-2 text-primary" />

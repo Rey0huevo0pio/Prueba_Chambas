@@ -19,11 +19,19 @@ const Inf_Readaptivos = () => {
       try {
         setLoading(true);
         const [reactivosRes, usuariosRes] = await Promise.all([
-          axios.get('http://192.168.106.102:5001/api/list/reactivos', {
-            headers: { 'Authorization': `Bearer ${authUser?.token}` }
+          axios.get('http://192.168.100.19:5001/api/list/reactivos', {
+            withCredentials: true, // Importante para enviar cookies
+            headers: { 
+              'Authorization': `Bearer ${authUser?.token}`,
+              'Content-Type': 'application/json'
+            }
           }),
-          axios.get('http://192.168.106.102:5001/api/list/usuarios', {
-            headers: { 'Authorization': `Bearer ${authUser?.token}` }
+          axios.get('http://192.168.100.19:5001/api/list/usuarios', {
+            withCredentials: true,
+            headers: { 
+              'Authorization': `Bearer ${authUser?.token}`,
+              'Content-Type': 'application/json'
+            }
           })
         ]);
         
@@ -39,6 +47,9 @@ const Inf_Readaptivos = () => {
   
     fetchData();
   }, [authUser?.token]);
+
+
+  
 
   const faqs = [
     {

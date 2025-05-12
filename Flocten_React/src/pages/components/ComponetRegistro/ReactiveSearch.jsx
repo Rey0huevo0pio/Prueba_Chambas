@@ -9,7 +9,7 @@ const ReactiveSearch = ({
     onShowResultsChange
   }) => (
     <div className="mb-6 relative ">
-      <div className="flex  ">
+      <div className="flex font-bold ">
         <input
           type="text"
           placeholder="Buscar reactivo por código o nombre..."
@@ -28,7 +28,7 @@ const ReactiveSearch = ({
       </div>
       
       {showSearchResults && (
-        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 max-h-60 overflow-auto border border-gray-200">
+        <div className="absolute z-10 mt-1 w-full bg-secondary-content shadow-lg rounded-md py-1 max-h-60 overflow-auto border border-gray-200">
           {searchResults.length > 0 ? (
             searchResults.map((reactive) => (
               <div
@@ -37,7 +37,7 @@ const ReactiveSearch = ({
                   onSelectReactive(reactive);
                   onShowResultsChange(false);
                 }}
-                className="px-4 py-2 hover:bg-indigo-100 cursor-pointer flex justify-between"
+                className="px-4 py-2 hover:bg-primary-content cursor-pointer flex justify-between"
               >
                 <span className="font-medium">{reactive.codigo}</span>
                 <span>{reactive.nombre}</span>

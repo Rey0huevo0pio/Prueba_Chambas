@@ -47,7 +47,7 @@ app.use(cookieParser());
 // ✅ CORS global
 app.use(
   cors({
-    origin: "http://192.168.100.19:5173",
+    origin: "http://192.168.106.102:5173",
     methods: ["GET", "POST", "PUT", "OPTIONS", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

@@ -1,6 +1,7 @@
 import Reactivos from "../models/registro.model.js";
 
 
+
 // Registrar nuevo reactivo (ya lo tenías)
 export const Registro_Reactivo = async (req, res) => {
   try {

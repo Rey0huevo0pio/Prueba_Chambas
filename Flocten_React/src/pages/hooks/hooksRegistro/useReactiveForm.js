@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { axiosInstance } from '../../../lib/axios.js';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { HAZARD_PICTOGRAMS, HAZARD_PHRASES } from '../../constants/index.js';
 
@@ -39,7 +39,7 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
 
     const fetchReactiveData = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `http://192.168.106.102:5001/api/reactivos/${reactiveId}`,
           { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
         );
@@ -60,21 +60,105 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
       setError("Por favor ingrese un término de búsqueda");
       return;
     }
-
+  
     setSearchLoading(true);
     try {
-      const response = await axios.get(
-        `http://192.168.106.102:5001/api/reactivos/search?term=${searchTerm}`,
-        { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
+      const response = await axiosInstance.get(
+        `/reactivos/search?term=${searchTerm}`
       );
       setSearchResults(response.data.data || response.data);
       setShowSearchResults(true);
       setError(null);
     } catch (err) {
-      setError(`Error al buscar reactivos: ${err.response?.data?.message || err.message}`);
+      console.log("Error details:", {
+        message: err.message,
+        response: err.response?.data,
+      });
+      
+      if (err.response?.status === 401) {
+        // Manejar específicamente el error de autenticación
+        setError("Tu sesión ha expirado. Por favor inicia sesión nuevamente.");
+        // Opcional: cerrar sesión automáticamente
+      
+      } else {
+        setError(`Error al buscar reactivos: ${err.response?.data?.message || err.message}`);
+      }
       console.error(err);
     } finally {
       setSearchLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!reactiveData.codigo) {
+      setError("El código del reactivo es requerido");
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+    
+    try {
+      const dataToSend = {
+        ...reactiveData,
+        controlNumber: authUser.controlNumber
+      };
+
+      await axiosInstance.put(
+        `http://192.168.106.102:5001/api/reactivos/${reactiveData.codigo}`,
+        dataToSend,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authUser?.token}`
+          }
+        }
+      );
+
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        onClose();
+      }, 8000);
+    } catch (err) {
+      setError(`Error al guardar los cambios: ${err.response?.data?.message || err.message}`);
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+ const handleImageUpload = async (e, fieldName) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      setUploadProgress(0);
+      const response = await axiosInstance.post(
+        'http://192.168.106.102:5001/api/upload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${authUser?.token}`
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(progress);
+          }
+        }
+      );
+
+      setReactiveData(prev => ({ ...prev, [fieldName]: response.data.imageUrl }));
+      setError(null);
+    } catch (err) {
+      setError(`Error al subir la imagen: ${err.response?.data?.message || err.message}`);
+      console.error(err);
     }
   };
 
@@ -108,78 +192,8 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
     }));
   };
 
-  const handleImageUpload = async (e, fieldName) => {
-    const file = e.target.files[0];
-    if (!file) return;
+ 
 
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-      setUploadProgress(0);
-      const response = await axios.post(
-        'http://192.168.100.19:5001/api/upload',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${authUser?.token}`
-          },
-          onUploadProgress: (progressEvent) => {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadProgress(progress);
-          }
-        }
-      );
-
-      setReactiveData(prev => ({ ...prev, [fieldName]: response.data.imageUrl }));
-      setError(null);
-    } catch (err) {
-      setError(`Error al subir la imagen: ${err.response?.data?.message || err.message}`);
-      console.error(err);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!reactiveData.codigo) {
-      setError("El código del reactivo es requerido");
-      return;
-    }
-
-    setSaving(true);
-    setError(null);
-    
-    try {
-      const dataToSend = {
-        ...reactiveData,
-        controlNumber: authUser.controlNumber
-      };
-
-      await axios.put(
-        `http://192.168.100.19:5001/api/reactivos/${reactiveData.codigo}`,
-        dataToSend,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authUser?.token}`
-          }
-        }
-      );
-
-      setSuccess(true);
-      setTimeout(() => {
-        setSuccess(false);
-        onClose();
-      }, 8000);
-    } catch (err) {
-      setError(`Error al guardar los cambios: ${err.response?.data?.message || err.message}`);
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  };
 
   return {
     reactiveData,

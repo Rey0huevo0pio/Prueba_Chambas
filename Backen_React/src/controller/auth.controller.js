@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 
 
 export const signup = async (req, res) => {
-  const { fullName, controlNumber, password } = req.body;
+  const { fullName, controlNumber, password, PermisosEx } = req.body;
   try {
     // Validar campos requeridos
     if (!fullName || !controlNumber || !password) {
@@ -45,7 +45,8 @@ export const signup = async (req, res) => {
     const newUser = new User({ 
       fullName, 
       controlNumber, 
-      password: hashedPassword 
+      password: hashedPassword,
+      PermisosEx 
     });
     await newUser.save();
 
@@ -56,6 +57,7 @@ export const signup = async (req, res) => {
       fullName: newUser.fullName,
       controlNumber: newUser.controlNumber,
       profilePic: newUser.profilePic,
+      PermisosEx: user.PermisosEx, 
     });
   } catch (error) {
     console.error("Error in signup controller", error);
@@ -78,8 +80,7 @@ export const login = async (req, res) => {
       fullName: user.fullName,
       controlNumber: user.controlNumber,
       profilePic: user.profilePic,
-      subscription: user.subscription,
-      audioUrl: user.audioUrl,
+      PermisosEx: user.PermisosEx, 
     });
   } catch (error) {
     console.error("Error in login controller", error);
@@ -127,6 +128,10 @@ export const updateProfilePic = async (req, res) => {
     console.error("Error al actualizar la imagen de perfil:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
+};
+
+export const PermisosAutorisacion= (req, res) => {
+  res.status(200).json(req.user);
 };
 
 export const checkAuth = (req, res) => {
