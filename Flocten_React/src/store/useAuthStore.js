@@ -3,25 +3,49 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
-const BASE_URL = import.meta.env.MODE === "development" ? "http://192.168.106.102:5001" : "/";
+const BASE_URL = import.meta.env.MODE === "development" ? "http://192.168.100.16:5001" : "/";
+
+// <<< AÑADIDO: Estado inicial del menú
+const initialMenu = [
+  { id: 1, name: "Registro", Link: "/" },
+  { id: 2, name: "Almacen", Link: "/RegistroQuimico" },
+  { id: 3, name: "Informacion", Link: "/InformacionReactivos" },
+];
+
 
 export const useAuthStore = create((set, get) => ({
+  // Tu estado existente...
   authUser: null,
   isSigningUp: false,
   isLoggingIn: false,
-  isCheckingAuth: true,
+  isCheckingAuth: false,
   onlineUsers: [],
   socket: null,
 
+  // <<< AÑADIDO: El menú ahora es parte del estado global
+  menu: initialMenu,
+
+  // <<< AÑADIDO: Acción para actualizar un link del menú
+  updateMenuLink: (menuId, newLink) =>
+    set((state) => ({
+      menu: state.menu.map((item) =>
+        item.id === menuId ? { ...item, Link: newLink } : item
+      ),
+    })),
+
   checkAuth: async () => {
-    const savedUser = localStorage.getItem("authUser");
-    if (savedUser) {
-      set({ authUser: JSON.parse(savedUser), isCheckingAuth: false });
-      get().connectSocket();
-      return;
-    }
+    if (get().isCheckingAuth) return;
+
+    set({ isCheckingAuth: true });
 
     try {
+      const savedUser = localStorage.getItem("authUser");
+      if (savedUser) {
+        set({ authUser: JSON.parse(savedUser) });
+        get().connectSocket();
+        return;
+      }
+
       const res = await axiosInstance.get("/auth/check");
       if (res.status === 200) {
         set({ authUser: res.data });
@@ -65,9 +89,9 @@ export const useAuthStore = create((set, get) => ({
       localStorage.setItem("authUser", JSON.stringify(res.data));
       toast.success("Logged in successfully");
       get().connectSocket();
-    } catch (error) {
+    } catch (error) { // ✅ --- INICIO DE LA CORRECCIÓN ---
       toast.error(error.response?.data?.message || "Error al iniciar sesión");
-    } finally {
+    } finally { // ✅ --- FIN DE LA CORRECCIÓN ---
       set({ isLoggingIn: false });
     }
   },
@@ -107,7 +131,6 @@ export const useAuthStore = create((set, get) => ({
     if (get().socket?.connected) get().socket.disconnect();
   },
 
-  // ✅ NUEVO: Actualizar foto de perfil
   updateProfilePicture: (profilePicUrl) => {
     const { authUser } = get();
     if (!authUser) {

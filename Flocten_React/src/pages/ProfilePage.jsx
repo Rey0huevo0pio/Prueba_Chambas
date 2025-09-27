@@ -21,7 +21,7 @@ const ProfilePage = () => {
     try {
       // Subir la imagen
       const uploadRes = await axios.post(
-        "http://192.168.100.19:5001/api/usuario/upload", 
+        "http://192.168.100.16:5001/api/usuario/upload", 
         formData, 
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -32,7 +32,7 @@ const ProfilePage = () => {
       
       // Actualizar el perfil con la nueva imagen
       const updateRes = await axios.put(
-        `http://192.168.100.19:5001/api/usuario/upload/ProfilePic/${authUser._id}`,
+        `http://192.168.100.16:5001/api/usuario/upload/ProfilePic/${authUser._id}`,
         { imageUrl }
       );
   

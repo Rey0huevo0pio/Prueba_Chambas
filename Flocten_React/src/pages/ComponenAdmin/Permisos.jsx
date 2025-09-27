@@ -23,7 +23,7 @@ const Permisos = () => {
       try {
         setLoading(true);
         const [usuariosRes] = await Promise.all([
-          axios.get('http://192.168.106.102:5001/api/list/usuarios', {
+          axios.get('http://192.168.100.16:5001/api/list/usuarios', {
             headers: { 'Authorization': `Bearer ${authUser?.token}` }
           })
         ]);
@@ -53,7 +53,7 @@ const Permisos = () => {
   const savePermissions = async () => {
     try {
       await axios.put(
-        `http://192.168.106.102:5001/api/usuario/Permiss/${editingUser.controlNumber}/permissions`,
+        `http://192.168.100.16:5001/api/usuario/Permiss/${editingUser.controlNumber}/permissions`,
         { permissions },
         { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
       );

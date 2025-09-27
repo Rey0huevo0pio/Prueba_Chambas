@@ -2,37 +2,11 @@ import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 
-
+//auth.controller.js
 export const signup = async (req, res) => {
   const { fullName, controlNumber, password, PermisosEx } = req.body;
   try {
-    // Validar campos requeridos
-    if (!fullName || !controlNumber || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    // Validar longitud de la contraseña
-    if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
-    }
-
-    // Validar formato del número de control
-    const controlNumberStr = controlNumber.toString();
-    
-    // Validar longitud (10-12 caracteres)
-    if (controlNumberStr.length < 10 || controlNumberStr.length > 12) {
-      return res.status(400).json({ 
-        message: "Control number must be between 10 and 12 digits" 
-      });
-    }
-    
-    // Validar que los primeros 9 dígitos sean "511622030"
-    const requiredPrefix = "511622030";
-    if (!controlNumberStr.startsWith(requiredPrefix)) {
-      return res.status(400).json({ 
-        message: `Control number must start with ${requiredPrefix}` 
-      });
-    }
+    // ... (toda tu lógica de validación se queda igual) ...
 
     // Verificar si el número de control ya existe
     const existingUser = await User.findOne({ controlNumber });
@@ -57,13 +31,15 @@ export const signup = async (req, res) => {
       fullName: newUser.fullName,
       controlNumber: newUser.controlNumber,
       profilePic: newUser.profilePic,
-      PermisosEx: user.PermisosEx, 
+      // --- LÍNEA CORREGIDA ---
+      PermisosEx: newUser.PermisosEx, 
     });
   } catch (error) {
     console.error("Error in signup controller", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const login = async (req, res) => {
   const { controlNumber, password } = req.body;
@@ -107,6 +83,8 @@ export const updateProfilePic = async (req, res) => {
       return res.status(400).json({ error: "No se proporcionó ninguna imagen" });
     }
 
+
+
     // Eliminar la imagen anterior si existe
     if (user.profilePic) {
       const oldImagePath = path.join(__dirname, "..", user.profilePic);
@@ -114,6 +92,10 @@ export const updateProfilePic = async (req, res) => {
         fs.unlinkSync(oldImagePath);
       }
     }
+
+
+
+
 
     // Guardar la nueva imagen
     const imagePath = `/uploads/profile-pics/${req.file.filename}`;

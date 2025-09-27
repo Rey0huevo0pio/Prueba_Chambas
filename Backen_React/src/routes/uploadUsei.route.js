@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.post("/upload", upload.single("image"), (req, res) => {
-  const fileUrl = `http://192.168.100.19:5001/uploads/profile-pics/${req.file.filename}`; 
+  const fileUrl = `http://192.168.100.16:5001/uploads/profile-pics/${req.file.filename}`; 
   res.json({ imageUrl: fileUrl });
 });
 

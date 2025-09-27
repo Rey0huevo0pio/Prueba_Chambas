@@ -14,7 +14,7 @@ export const useReactiveList = () => {
     const fetchAllReactives = async () => {
       try {
         const response = await axios.get(
-          'http://192.168.100.19:5001/api/reactivos/lista',
+          'http://192.168.100.16:5001/api/reactivos/lista',
           { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
         );
         setReactives(response.data.data || response.data);
@@ -47,7 +47,7 @@ export const useReactiveList = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        'http://192.168.100.19:5001/api/reactivos/lista',
+        'http://192.168.100.16:5001/api/reactivos/lista',
         { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
       );
       setReactives(response.data.data || response.data);
@@ -63,7 +63,7 @@ export const useReactiveList = () => {
   const deleteReactive = async (codigo) => {
     try {
       await axios.delete(
-        `http://192.168.106.102:5001/api/reactivos/${codigo}`,
+        `http://192.168.100.16:5001/api/reactivos/${codigo}`,
         { headers: { 'Authorization': `Bearer ${authUser?.token}` } }
       );
       refreshList();

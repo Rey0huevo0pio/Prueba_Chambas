@@ -8,13 +8,14 @@ import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
+import Registro_General from "./pages/P_Multi_Opcines/Registro_General";
 
 /*Component for react of Reactivios quimicos */
-import ReagentDetailPage from "./pages/P_Quimicos/RegistroQuimico.jsx";
-
-import Inf_Readaptivos from "./pages/P_Quimicos/Inf_Readaptivos.jsx";
-
-
+import ReagentDetailPage from "./pages/P_Multi_Opcines/RegistroQuimico";
+import Re_Laboratorio from "./pages/P_Multi_Opcines/Re_Laboratorio.jsx";
+import Inf_Readaptivos from "./pages/P_Multi_Opcines/Inf_Readaptivos";
+import Re_Mecatronica from "./pages/P_Multi_Opcines/Re_Mecatronica";
+import Re_Software from "./pages/P_Multi_Opcines/Re_Software"
 // Store y librerías adicionales
 import { useAuthStore } from "./store/useAuthStore.js";
 import { Loader } from "lucide-react";
@@ -52,12 +53,6 @@ const App = () => {
       case "/Informa":
         document.title = "Información - MultiPio";
         break;
-      case "/ServicoAudio":
-        document.title = "Servicio de Audio - MultiPio";
-        break;
-      case "/subscription":
-        document.title = "Subscription - MultiPio";
-        break;
       default:
         document.title = "MultiPio";
         break;
@@ -84,8 +79,12 @@ const App = () => {
         <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
         
         <Route path="/InformacionReactivos" element={authUser ? <Inf_Readaptivos /> : <Navigate to="/" />} />
-     
+        <Route path="/Re_Laboratorio" element={authUser ? <Re_Laboratorio /> : <Navigate to="/"/> }/>
         <Route path="/RegistroQuimico" element={authUser ? <ReagentDetailPage /> : <Navigate to="/" />} />
+        <Route path="/Re_Mecatronica" element={authUser ? <Re_Mecatronica /> : <Navigate to="/" />} />
+        <Route path="/Re_Software" element={authUser ? <Re_Software /> : <Navigate to="/" />} />
+         <Route path="/Registro_General" element={authUser ? <Registro_General /> : <Navigate to="/" />} />
+    
       </Routes>
 
       <Toaster />

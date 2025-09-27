@@ -6,7 +6,7 @@ import 'aos/dist/aos.css'
 
 import "slick-carousel/slick/slick.css"
 import "slick-carousel/slick/slick-theme.css"
-import Al_Readaptivos from "./P_Quimicos/Al_Readaptivos";
+import Registro_General from "./P_Multi_Opcines/Registro_General";
 
 const Home_Page = () => {
 
@@ -22,7 +22,7 @@ const Home_Page = () => {
 
   return (
     <div className="min-h-screen flex flex-col pt-20">
-      <Al_Readaptivos className="flex-1" />
+      <Registro_General className="flex-1" />
 
     </div>
   );

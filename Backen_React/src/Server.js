@@ -18,6 +18,7 @@ import userRoutes from './routes/users.route.js'
 import { connectDB } from "./lib/db.js";
 import { app, server } from "./lib/socket.js";
 
+dotenv.config();
 const clearCache = async () => {
   const modulePath = fileURLToPath(import.meta.url);
   const moduleDir = path.dirname(modulePath);
@@ -32,7 +33,7 @@ const clearCache = async () => {
 await clearCache();
 console.log("🧹 Caché limpiada antes de iniciar el servidor");
 
-dotenv.config();
+
 const PORT = process.env.PORT || 5001;
 
 // Obtener el directorio raíz
@@ -44,10 +45,26 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 
+
+// --- CAMBIO CLAVE AQUÍ ---
+// Lista de orígenes permitidos
+const allowedOrigins = [
+  "http://127.0.0.1:5173",
+  "http://localhost:5173", // Es buena idea agregar localhost también
+  "http://192.168.100.16:5173" // El origen que causaba el error
+];
+
 // ✅ CORS global
 app.use(
   cors({
-    origin: "http://192.168.106.102:5173",
+    origin: function (origin, callback) {
+      // Permite solicitudes sin origen (como Postman) o si el origen está en la lista
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ["GET", "POST", "PUT", "OPTIONS", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -86,6 +103,3 @@ server.listen(PORT, () => {
   console.log("Server running on PORT:", PORT);
   connectDB();
 });
-
-
-

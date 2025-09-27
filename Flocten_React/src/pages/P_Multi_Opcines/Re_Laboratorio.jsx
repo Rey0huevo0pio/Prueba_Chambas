@@ -30,7 +30,7 @@ const HAZARD_PHRASES = [
   { code: 'H370', text: 'Provoca daños en los órganos' },
 ];
 
-const Al_Readaptivos = () => {
+const Re_Laboratorio = () => {
   const { authUser } = useAuthStore();
   const { codigo, generarCodigo } = useGeneratedCode();
   const { modalOpen, selectedImage, closeModal } = useImageModal();
@@ -128,7 +128,7 @@ const Al_Readaptivos = () => {
       console.log("Datos a enviar:", dataToSend);
 
       const response = await axios.post(
-        "http://192.168.106.102:5001/api/reactivos", 
+        "http://192.168.100.16:5001/api/reactivos", 
         dataToSend,
         {
           headers: {
@@ -185,7 +185,7 @@ const Al_Readaptivos = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start" >
+    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-8 md:pt-24 flex justify-center items-start" >
       <div className=" max-w-5xl bg-base-100 rounded-xl shadow-2xl overflow-hidden"  >
         {/* Encabezado */}
         <div className="bg-gradient-to-r from-primary to-base-content p-6">
@@ -454,4 +454,4 @@ const Al_Readaptivos = () => {
   );
 };
 
-export default Al_Readaptivos;
+export default Re_Laboratorio;
