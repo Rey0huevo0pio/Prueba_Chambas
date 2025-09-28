@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FaSync, FaInfoCircle, FaTimes } from "react-icons/fa";
 import axios from 'axios';
 import LogUp from "../../public/img/LogUp.png";
@@ -7,9 +7,10 @@ import useGeneratedCode from '../hooks/useGeneratedCode';
 import useImageModal from '../hooks/useImageModal';
 import ImageDisplay from '../components/ImageDisplay';
 import { useAuthStore } from '../../store/useAuthStore';
-import { User2 } from 'lucide-react';
+import { User2, } from 'lucide-react';
 import CustomFormInput from '../components/CustomFormInput';
 import DangerPictogram from '../components/DangerPictogram';
+import { Link } from "react-router"
 
 const HAZARD_PICTOGRAMS = [
   { id: 'flammable', label: 'Inflamable', icon: '🔥' },
@@ -215,6 +216,9 @@ const Re_Laboratorio = () => {
         {/* Número de control */}
         <div className="space-y-1.5">
           <p className="px-4 py-2.5 bg-base-200 rounded-lg border flex items-center gap-2">
+             <Link to="/Registro_General">
+        regresa
+      </Link>
             <User2 className="w-4 h-4" />
             Número de Control: {authUser?.controlNumber || "No disponible"}
           </p>
