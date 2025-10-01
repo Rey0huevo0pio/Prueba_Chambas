@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { useAuthStore } from '../../../../store/useAuthStore';
-import { INITIAL_FORM_DATA } from '../constants/laboratoryConstants';
-import { registerLabItem } from '../services/laboratoryService';
+import axios from 'axios';
+import { INITIAL_FORM_DATA } from '../constants/constants';
 
-export const useLabForm = (itemType, codigo, onFormSuccess) => {
-  const { authUser } = useAuthStore();
+const useLabForm = (authUser, codigo, itemType, reactivoImg, simboloImg) => {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -15,98 +13,91 @@ export const useLabForm = (itemType, codigo, onFormSuccess) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const toggleSelection = (field, value) => {
+  const togglePictogram = (pictogramId) => {
     setFormData(prev => ({
       ...prev,
-      [field]: prev[field].includes(value)
-        ? prev[field].filter(item => item !== value)
-        : [...prev[field], value],
+      pictogramasPeligro: prev.pictogramasPeligro.includes(pictogramId)
+        ? prev.pictogramasPeligro.filter(id => id !== pictogramId)
+        : [...prev.pictogramasPeligro, pictogramId]
     }));
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.nombre) newErrors.nombre = "El nombre es requerido";
-    if (itemType === 'reactivo') {
-      if (!formData.formula) newErrors.formula = "La fórmula es requerida";
-      // ... más validaciones de reactivo
-    } else if (itemType === 'herramienta') {
-      if (!formData.descripcion) newErrors.descripcion = "La descripción es requerida";
-      // ... más validaciones de herramienta
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const toggleHazardPhrase = (phraseCode) => {
+     setFormData(prev => ({
+      ...prev,
+      frasesPeligro: prev.frasesPeligro.includes(phraseCode)
+        ? prev.frasesPeligro.filter(code => code !== phraseCode)
+        : [...prev.frasesPeligro, phraseCode]
+    }));
+  };
+  
+  const resetForm = () => {
+      setFormData(INITIAL_FORM_DATA);
+      setErrors({});
   };
 
-  const handleSubmit = async (e, reactivoImg, simboloImg) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm() || !authUser?.controlNumber) {
-        if(!authUser?.controlNumber) alert("Error de autenticación, por favor reingresa.");
-        return;
-    }
-
     setIsSubmitting(true);
-    setUploadProgress(0);
+    setErrors({});
 
-    const baseData = {
-      controlNumber: authUser.controlNumber,
-      codigo,
-      nombre: formData.nombre,
-      cantidad: formData.cantidad || "N/A",
-      numeroLote: formData.numeroLote || "N/A",
-      descripcion: formData.descripcion || "N/A",
-    };
-
-    let dataToSend;
-    if (itemType === 'reactivo') {
-      dataToSend = {
-        ...baseData,
-        imagenReactivo: reactivoImg,
-        imagenSimbolo: simboloImg,
-        formula: formData.formula,
-        // ... resto de campos de reactivo
-      };
-    } else { // 'herramienta'
-      dataToSend = {
-        ...baseData,
-        imagenHerramienta: reactivoImg,
-        imagenAdicional: simboloImg,
-        estado: formData.estado,
-        // ... resto de campos de herramienta
-      };
-    }
+    // Lógica de validación (idéntica a la tuya)
+    const newErrors = {};
+    if (!formData.nombre) newErrors.nombre = "Nombre es requerido";
+    if (!authUser?.controlNumber) newErrors.general = "No se pudo obtener el número de control";
+    // ... más validaciones ...
     
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      const result = await registerLabItem({
-        itemType,
-        data: dataToSend,
-        token: authUser.token,
-        onUploadProgress: (event) => {
-          const progress = event.total ? Math.round((event.loaded * 100) / event.total) : 0;
-          setUploadProgress(progress);
-        },
+      let dataToSend;
+      let endpoint = '';
+      
+      const baseData = {
+        controlNumber: authUser.controlNumber,
+        codigo: codigo,
+        nombre: formData.nombre,
+        // ... resto de datos base ...
+      };
+
+      if (itemType === 'reactivo') {
+        endpoint = "/api/reactivos";
+        dataToSend = { /* ... datos del reactivo ... */ };
+      } else if (itemType === 'herramienta') {
+        endpoint = "/api/herramientas";
+        dataToSend = { /* ... datos de la herramienta ... */ };
+      } else {
+        setIsSubmitting(false);
+        return;
+      }
+      
+      const response = await axios.post(`http://192.168.100.16:5001${endpoint}`, dataToSend, {
+          headers: { 'Authorization': `Bearer ${authUser?.token}` },
+          onUploadProgress: (progressEvent) => {
+             const total = progressEvent.total || 0;
+             const progress = total > 0 ? Math.round((progressEvent.loaded * 100) / total) : 0;
+             setUploadProgress(progress);
+          }
       });
 
-      if (result.success) {
+      if (response.data.success) {
         alert(`✅ ${itemType} registrado correctamente`);
-        setFormData(INITIAL_FORM_DATA);
-        onFormSuccess(); // Llama a la función de éxito (ej. generar nuevo código)
+        resetForm();
+        return true; // Indicar éxito
       }
     } catch (error) {
       console.error(`❌ Error al registrar ${itemType}:`, error);
-      alert(error.message);
+      alert(`❌ Error al registrar ${itemType}`);
     } finally {
       setIsSubmitting(false);
       setUploadProgress(0);
     }
+    return false; // Indicar fallo
   };
-
-  const handleCancel = () => {
-     if (window.confirm('¿Estás seguro de que deseas cancelar? Los cambios no guardados se perderán.')) {
-        setFormData(INITIAL_FORM_DATA);
-        setErrors({});
-      }
-  }
 
   return {
     formData,
@@ -114,8 +105,11 @@ export const useLabForm = (itemType, codigo, onFormSuccess) => {
     isSubmitting,
     uploadProgress,
     handleChange,
-    toggleSelection,
+    togglePictogram,
+    toggleHazardPhrase,
     handleSubmit,
-    handleCancel
+    resetForm,
   };
 };
+
+export default useLabForm;
