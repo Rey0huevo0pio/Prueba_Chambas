@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuthStore } from '../../../store/useAuthStore';
+import { useAuthStore } from '../../../../../../store/useAuthStore';
 
 export const useReactiveList = () => {
   const { authUser } = useAuthStore();

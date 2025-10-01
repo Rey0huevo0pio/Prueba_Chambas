@@ -64,12 +64,31 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = async (req, res) => {
-  // Borrar la cookie del token JWT
-  res.cookie("jwt", "", { maxAge: 0 });
-  res.status(200).json({ message: "Logged out successfully" });
-};
 
+export const logout = async (req, res) => {
+  try {
+    // --- CORRECCIÓN AQUÍ ---
+    // Define las mismas opciones que usaste para crear la cookie.
+    const isProduction = process.env.NODE_ENV === "production";
+    
+    // Esta configuración DEBE ser idéntica a la de generateToken.js
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true, // Siempre true porque sameSite es 'none'
+      sameSite: "none",
+      partitioned: true,
+    };
+    
+    // Para borrar la cookie, se le pasa un string vacío y maxAge: 0 con las opciones correctas.
+    res.cookie("jwt", "", { ...cookieOptions, maxAge: 0 });
+
+    res.status(200).json({ message: "Logged out successfully" });
+
+  } catch (error) {
+    console.error("Error during logout:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 export const updateProfilePic = async (req, res) => {
   try {
     const userId = req.user._id;

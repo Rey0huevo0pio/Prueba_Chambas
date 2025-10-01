@@ -5,16 +5,17 @@ import express from "express";
 const app = express();
 const server = http.createServer(app);
 
-// --- CAMBIO CLAVE AQUÍ ---
-// Lista de orígenes permitidos para Socket.IO
+// --- CORRECCIÓN AQUÍ ---
+// Lista de orígenes permitidos para Socket.IO.
+// Asegúrate de que esta IP es la correcta y añade localhost por si acaso.
 const allowedOrigins = [
-    "http://127.0.0.1:5173",
-    "http://localhost:5173",
-    "http://192.168.106.102:5173"
+    "http://192.168.100.16:5173", // La IP de tu frontend
+    "http://localhost:5173"       // Para desarrollo local
 ];
 
 const io = new Server(server, {
   cors: {
+    // Puedes pasar la lista directamente
     origin: allowedOrigins,
     methods: ["GET", "POST", "PUT"],
     credentials: true,

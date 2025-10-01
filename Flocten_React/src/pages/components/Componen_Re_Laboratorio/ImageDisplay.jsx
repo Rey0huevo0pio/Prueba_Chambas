@@ -1,5 +1,5 @@
 
-import useImageModal from '../hooks/useImageModal';
+import useImageModal from './Hooks/useImageModal';
 import axios from 'axios'; // <--- IMPORTACIÓN CORRECTA
 
 const ImageDisplay = ({ src, alt, label, ringColor = 'primary', allowUpload = false, onImageChange }) => {

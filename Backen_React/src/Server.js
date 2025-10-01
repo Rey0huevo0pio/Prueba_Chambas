@@ -49,9 +49,10 @@ app.use(cookieParser());
 // --- CAMBIO CLAVE AQUÍ ---
 // Lista de orígenes permitidos
 const allowedOrigins = [
-  "http://127.0.0.1:5173",
-  "http://localhost:5173", // Es buena idea agregar localhost también
-  "http://192.168.100.16:5173" // El origen que causaba el error
+// Es buena idea agregar localhost también
+      "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "http://192.168.100.16:5173" // El origen que causaba el error
 ];
 
 // ✅ CORS global

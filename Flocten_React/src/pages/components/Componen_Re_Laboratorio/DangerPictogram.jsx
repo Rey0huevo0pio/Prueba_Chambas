@@ -1,4 +1,3 @@
-import React from 'react';
 
 const DangerPictogram = ({ children, selected, onClick }) => {
   return (
