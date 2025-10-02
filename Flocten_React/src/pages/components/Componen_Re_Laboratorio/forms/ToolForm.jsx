@@ -17,6 +17,74 @@ const ToolForm = ({ formData, handleChange, errors }) => {
       </div>
 
       {/* ... otros campos del formulario para herramientas ... */}
+
+        {formData.tipoHerramienta === 'otros' && (
+                      <CustomFormInput 
+                        label="Especificar Tipo" 
+                        name="especificarTipo"
+                        placeholder="Ej: Embudo de filtración"
+                        value={formData.especificarTipo}
+                        onChange={handleChange}
+                        error={errors.especificarTipo}
+                        required
+                      />
+                    )}
+
+                    {/* Sección 3: Cantidad, lote, serie */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 ">
+                      <CustomFormInput 
+                        label="Cantidad" 
+                        name="cantidad"
+                        placeholder="Ej: 10 unidades"
+                        value={formData.cantidad}
+                        onChange={handleChange}
+                        error={errors.cantidad}
+                      />
+                      <CustomFormInput 
+                        label="Número de Lote" 
+                        name="numeroLote"
+                        placeholder="Ej: Lote-2023-001"
+                        value={formData.numeroLote}
+                        onChange={handleChange}
+                        error={errors.numeroLote}
+                      />
+                      <CustomFormInput 
+                        label="Número de Serie" 
+                        name="numeroSerie"
+                        placeholder="Ej: SER-001"
+                        value={formData.numeroSerie}
+                        onChange={handleChange}
+                        error={errors.numeroSerie}
+                      />
+                    </div>
+
+                    {/* Descripción y estado */}
+                    <div className="grid grid-cols-1 md:grid-cols-1 gap-10 ml-1 max-w-full ">
+                      <CustomFormInput 
+                        label="Descripción" 
+                        name="descripcion"
+                        placeholder="Descripción detallada de la herramienta, material, usos..."
+                        textarea 
+                        value={formData.descripcion}
+                        onChange={handleChange}
+                        error={errors.descripcion}
+                        customClass="min-h-40 min-w-full"
+                        required
+                      />
+                      <CustomFormInput 
+                        label="Descripción del Estado" 
+                        name="estado"
+                        placeholder="Estado actual de la herramienta, posibles daños..."
+                        textarea 
+                        value={formData.estado}
+                        onChange={handleChange}
+                        error={errors.estado}
+                        customClass="min-h-40 min-w-full"
+                        required
+                      />
+                    </div>
+                  
+
     </>
   );
 };

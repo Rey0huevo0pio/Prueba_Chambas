@@ -263,10 +263,6 @@ export const eliminarReactivo = async (req, res) => {
 };
 
 
-// controllers/Registro.controller.js
-
-// ... (otros imports y funciones permanecen igual)
-
 export const listarReactivos = async (req, res) => {
   try {
     const reactivos = await Reactivos.find(); // ← Trae todos

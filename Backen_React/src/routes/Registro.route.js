@@ -9,6 +9,8 @@ import {
 
 } from '../controller/Registro.controller.js';
 
+import {Registro_Herramienta} from '../controller/Registro_MaterialL.controller.js';
+
 const router = express.Router();
 
 router.post('/reactivos',Registro_Reactivo);
@@ -19,6 +21,6 @@ router.put('/reactivos/:codigo',actualizarReactivo);
 
 
 router.delete('/reactivos/:codigo',eliminarReactivo);
-
+router.post('/herramientas', Registro_Herramienta);
 
 export default router;
