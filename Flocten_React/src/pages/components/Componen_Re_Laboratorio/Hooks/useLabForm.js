@@ -36,21 +36,26 @@ const useLabForm = (authUser, codigo, itemType, reactivoImg, simboloImg) => {
       setErrors({});
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // La función ya no recibe 'e' porque el componente padre se encarga del preventDefault
+  const handleSubmit = async () => {
     setIsSubmitting(true);
     setErrors({});
 
-    // Lógica de validación (idéntica a la tuya)
+    // Lógica de validación
     const newErrors = {};
     if (!formData.nombre) newErrors.nombre = "Nombre es requerido";
     if (!authUser?.controlNumber) newErrors.general = "No se pudo obtener el número de control";
-    // ... más validaciones ...
+    
+    // Aquí puedes agregar el resto de tus validaciones...
+    if (itemType === 'reactivo') {
+      if (!formData.formula) newErrors.formula = "Fórmula es requerida";
+      if (!formData.primerosAuxilios) newErrors.primerosAuxilios = "Primeros auxilios es requerido";
+    }
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setIsSubmitting(false);
-      return;
+      return false; // Detiene la ejecución si hay errores
     }
 
     try {
@@ -61,22 +66,44 @@ const useLabForm = (authUser, codigo, itemType, reactivoImg, simboloImg) => {
         controlNumber: authUser.controlNumber,
         codigo: codigo,
         nombre: formData.nombre,
-        // ... resto de datos base ...
+        cantidad: formData.cantidad || "No especificado",
+        numeroLote: formData.numeroLote || "No especificado",
+        descripcion: formData.descripcion || "No especificado",
       };
 
       if (itemType === 'reactivo') {
         endpoint = "/api/reactivos";
-        dataToSend = { /* ... datos del reactivo ... */ };
+        dataToSend = {
+          ...baseData,
+          imagenReactivo: reactivoImg,
+          imagenSimbolo: simboloImg,
+          formula: formData.formula,
+          concentracion: formData.concentracion || "No especificado",
+          primerosAuxilios: formData.primerosAuxilios,
+          manejoSeguro: formData.manejoSeguro,
+          pictogramasPeligro: formData.pictogramasPeligro,
+          frasesPeligro: formData.frasesPeligro
+        };
       } else if (itemType === 'herramienta') {
         endpoint = "/api/herramientas";
-        dataToSend = { /* ... datos de la herramienta ... */ };
+        dataToSend = {
+          ...baseData,
+          imagenHerramienta: reactivoImg,
+          imagenAdicional: simboloImg,
+          estado: formData.estado,
+          numeroSerie: formData.numeroSerie || "No especificado",
+          tipo: formData.tipoHerramienta === 'otros' ? formData.especificarTipo : formData.tipoHerramienta,
+        };
       } else {
         setIsSubmitting(false);
-        return;
+        return false;
       }
       
       const response = await axios.post(`http://192.168.100.16:5001${endpoint}`, dataToSend, {
-          headers: { 'Authorization': `Bearer ${authUser?.token}` },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authUser?.token}` 
+          },
           onUploadProgress: (progressEvent) => {
              const total = progressEvent.total || 0;
              const progress = total > 0 ? Math.round((progressEvent.loaded * 100) / total) : 0;
@@ -88,10 +115,13 @@ const useLabForm = (authUser, codigo, itemType, reactivoImg, simboloImg) => {
         alert(`✅ ${itemType} registrado correctamente`);
         resetForm();
         return true; // Indicar éxito
+      } else {
+        throw new Error(response.data.message || "Error desconocido del servidor");
       }
+
     } catch (error) {
       console.error(`❌ Error al registrar ${itemType}:`, error);
-      alert(`❌ Error al registrar ${itemType}`);
+      alert(`❌ Error al registrar ${itemType}: ${error.message}`);
     } finally {
       setIsSubmitting(false);
       setUploadProgress(0);
