@@ -13,18 +13,6 @@ function Registro_General() {
       label: 'Registro para Laboratorio',
       icon: <FaFlask className="text-3xl mb-3 text-cyan-400" />,
       description: 'Accede al módulo de registro para el área de laboratorio.'
-    },
-    {
-      to: '/Re_Software',
-      label: 'Registro para Ingeniería de Software',
-      icon: <FaLaptopCode className="text-3xl mb-3 text-emerald-400" />,
-      description: 'Registra y gestiona proyectos y actividades de software.'
-    },
-    {
-      to: '/Re_Mecatronica',
-      label: 'Registro para Mecatrónica',
-      icon: <FaCogs className="text-3xl mb-3 text-amber-400" />,
-      description: 'Administra los registros del departamento de mecatrónica.'
     }
   ];
 
@@ -34,7 +22,7 @@ function Registro_General() {
 
   return (
     // Contenedor principal
-    <div className="min-h-screen bg-gradient-to-br from-base-200 to-base-300 p-4 sm:pt-24 flex flex-col items-center pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-base-200 to-base-300 p-4 sm:pt-4 flex flex-col items-center">
       {/* min-h-screen: Ocupa al menos toda la altura de la pantalla.
         bg-gradient-to-br from-base-200 to-base-300: Fondo con un gradiente sutil usando colores del tema.
         p-4 sm:p-8: Padding responsivo (más espacio en pantallas grandes).
@@ -56,7 +44,7 @@ function Registro_General() {
       </div>
 
       {/* Contenedor de la cuadrícula (Grid) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full">
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-8 max-w-6xl w-full">
       {/*
         grid: Activa el layout de CSS Grid.
         grid-cols-1: Por defecto (móviles) es una sola columna.

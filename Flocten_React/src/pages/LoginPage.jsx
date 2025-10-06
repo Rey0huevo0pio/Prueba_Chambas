@@ -1,117 +1,61 @@
-import { useState } from "react";
-import { useAuthStore } from "../store/useAuthStore";
-import AuthImagePattern from "../components/AuthImagePattern";
-import { Link } from "react-router-dom";
-import { Eye, EyeOff, Loader2, Lock, User } from "lucide-react";
+// src/pages/LoginPage.jsx
 
-import LaBoritiLog from "../public/img/LaBoritiLog.png";
+import { motion } from "framer-motion";
+import { useAuthStore } from "../store/useAuthStore";
+import LoginHeader from "./Componente_Acceso/Auth_Login/LoginHeader";
+import LoginForm from "./Componente_Acceso/Auth_Login/LoginForm";
+import AuthRedirect from "./Componente_Acceso/Auth_Login/AuthRedirect";
+import Lab_Primero from "../public/img/Lab_Primero.png";
 
 const LoginPage = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    controlNumber: "",
-    password: "",
-  });
-  const { login, isLoggingIn } = useAuthStore();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    login(formData);
-  };
+  const { login, isLoggingIn, error } = useAuthStore();
 
   return (
-    <div className="h-screen grid lg:grid-cols-2">
-      {/* Left Side - Form */}
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-28 h-28 rounded-full flex items-center justify-center">
-                <img src={LaBoritiLog} className="w-28 h-28 text-primary" alt="Logo" />
-              </div>
-              <h1 className="text-2xl font-bold mt-2">Welcome Back</h1>
-              <p className="text-base-content/60">Sign in to your account</p>
-            </div>
-          </div>
+    // 👇 CAMBIO PRINCIPAL: Volvemos a min-h-screen para permitir que el contenido crezca si es necesario.
+    <div className="min-h-screen bg-base-100 lg:grid lg:grid-cols-2">
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Número de control</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-base-content/40" />
-                </div>
-                <input
-                  type="text"
-                  className="input input-bordered w-full pl-10"
-                  placeholder="Ej. 21100001"
-                  value={formData.controlNumber}
-                  onChange={(e) => setFormData({ ...formData, controlNumber: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Password</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-base-content/40" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="input input-bordered w-full pl-10"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-base-content/40" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-base-content/40" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <button type="submit" className="btn btn-primary w-full" disabled={isLoggingIn}>
-              {isLoggingIn ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                "Sign in"
-              )}
-            </button>
-          </form>
-
-          <div className="text-center">
-            <p className="text-base-content/60">
-              Don&apos;t have an account?{" "}
-              <Link to="/signup" className="link link-primary">
-                Create account
-              </Link>
-            </p>
-          </div>
-        </div>
+      {/* ======================================================= */}
+      {/* LADO IZQUIERDO: CONTENEDOR DEL FORMULARIO              */}
+      {/* ======================================================= */}
+      {/* Añadimos 'w-full' para asegurar que ocupe todo el ancho disponible 
+        y 'py-12' para darle espacio vertical en móviles sin que se sienta apretado.
+      */}
+      <div className="flex w-full flex-col justify-center px-8 py-12">
+        <motion.div
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+          className="mx-auto w-full max-w-md space-y-6" // mx-auto para centrar el contenedor del formulario
+        >
+          <LoginHeader />
+          <LoginForm onLogin={login} isLoggingIn={isLoggingIn} error={error} />
+          <AuthRedirect
+            text="¿No tienes una cuenta?"
+            linkText="Regístrate aquí"
+            to="/register"
+          />
+        </motion.div>
       </div>
 
-      {/* Right Side - Image/Pattern */}
-      <AuthImagePattern
-        title={"Welcome back!"}
-        subtitle={"Sign in to continue your conversations and catch up with your messages."}
-      />
+      {/* ======================================================= */}
+      {/* LADO DERECHO: CONTENEDOR DE LA IMAGEN                  */}
+      {/* ======================================================= */}
+      {/* La lógica 'hidden lg:block' ya es perfecta para el diseño responsivo.
+        Se oculta en móviles y aparece en pantallas grandes.
+      */}
+      <motion.div
+        initial={{ opacity: 0, x: 100 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, ease: "easeInOut", delay: 0.2 }}
+        className="hidden lg:block"
+      >
+        <img
+          src={Lab_Primero}
+          alt="Equipos de laboratorio clínico"
+          className="h-full w-full object-cover" // object-cover es ideal para que la imagen llene el espacio sin deformarse
+        />
+      </motion.div>
+
     </div>
   );
 };

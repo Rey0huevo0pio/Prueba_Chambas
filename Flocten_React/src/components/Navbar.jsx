@@ -5,23 +5,13 @@ import Logp from "../public/img/LaBoritiLog.png";
 
 
 const Navbar = () => {
-  // <<< MODIFICADO: Ahora obtenemos 'menu' del store
+
   const { logout, authUser, menu } = useAuthStore();
 
-  // <<< ELIMINADO: Ya no necesitamos este array local
-  /*
-  const Menu = [
-    { id: 1, name: "Registro", Link: "/" },
-    { id: 2, name: "Almacen", Link: "/RegistroQuimico" },
-    { id: 3, name: "Informacion", Link: "/InformacionReactivos" },
-  ];
-  */
+
 
   return (
-  <header
-  className="border-b border-base-300 fixed w-full top-0 z-40
-  backdrop-blur-lg bg-base-300/15"
->
+  <header  className="border-b border-base-300 fixed w-full top-0 z-40 backdrop-blur-lg bg-base-300/15">
       <div className="container mx-auto px-4 max-h-24">
         <div className="flex items-center justify-between h-full">
           {/* ... tu otro JSX ... */}
@@ -44,10 +34,16 @@ const Navbar = () => {
                   <User className="size-5" />
                   <span className="hidden sm:inline">Profile</span>
                 </Link>
-                <button className="flex gap-2 items-center" onClick={logout}>
+            <Link onClick={logout} className={`btn btn-sm gap-2`}>
+                  <User className="size-5" />
+                  <span className="hidden sm:inline">Profile</span>
+                </Link>
+
+
+                 {/*<button className="flex gap-2 items-center" onClick={logout}>
                   <LogOut className="size-5" />
                   <span className="hidden sm:inline">Logout</span>
-                </button>
+                </button> */}
               </>
             )}
           </div>

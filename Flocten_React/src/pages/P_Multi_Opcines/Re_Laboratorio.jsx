@@ -135,7 +135,7 @@ const Re_Laboratorio = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-8 md:pt-24 flex justify-center items-start">
+    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-8 md:pt-4 flex justify-center items-start">
       <div className="max-w-5xl bg-base-100 rounded-xl shadow-2xl overflow-hidden">
         
         <LabItemHeader codigo={codigo} generarCodigo={generarCodigo} authUser={authUser} errors={errors} />

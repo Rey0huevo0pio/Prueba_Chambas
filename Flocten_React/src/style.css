@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@plugin "daisyui";
-
 @plugin "daisyui" {
     themes: all;
   }
@@ -49,6 +47,7 @@
     --depth: 1;
     --noise: 0;
   }
+
   @plugin "daisyui/theme" {
     name: "myRosi";
     color-scheme: red;
@@ -71,6 +70,7 @@
   
 
   }
+
   @plugin "daisyui/theme" {
     name: "darkNova";
     prefersdark: true;
@@ -101,6 +101,7 @@
     --radius-box: 1rem;
     --depth: 2;
   }
+  
   @plugin "daisyui/theme" {
     name: "softCream";
     default: true;

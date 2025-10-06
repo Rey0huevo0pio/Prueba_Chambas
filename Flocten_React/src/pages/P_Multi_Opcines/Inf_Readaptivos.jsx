@@ -66,13 +66,13 @@ const Inf_Readaptivos = () => {
 
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+     
       <p className="text-gray-600">Cargando información...</p>
     </div>
   );
   
   if (error) return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-4">
       <div className="bg-red-50 border-l-4 border-red-500 p-4 max-w-md">
         <div className="flex">
           <div className="flex-shrink-0">
@@ -103,7 +103,7 @@ const Inf_Readaptivos = () => {
   return (
 /* className=min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start*/
     
-    <div className="bg-gradient-to-br from-base-100 to-base-200 min-h-screen pt-24 pb-12 ">
+    <div className="bg-gradient-to-br from-base-100 to-base-200 min-h-screen pt-4 pb-12 ">
 
 
       {/* Header */}

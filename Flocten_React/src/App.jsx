@@ -1,6 +1,10 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
+import { AnimatePresence } from "framer-motion"; // <-- 1. Importa AnimatePresence
+import AnimatedPage from "./components/AnimatedPage"; // <-- 2. Importa tu componente de animación
+
+
 // Componentes de las páginas
 import Navbar from "./components/Navbar";
 import Home_Page from "./pages/Home_Page";
@@ -27,7 +31,7 @@ const App = () => {
   const { theme } = useThemeStore();
   const location = useLocation(); // Hook para obtener la ubicación actual
 
-  // Verificar autenticación
+  
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
@@ -67,29 +71,37 @@ const App = () => {
       </div>
     );
 
-  return (
+ return (
     <div data-theme={theme} className="text-base-content">
       <Navbar />
 
-      <Routes>
-        <Route path="/" element={authUser ? <Home_Page /> : <Navigate to="/login" />} />
-        <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/" />} />
-        <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
-        
-        <Route path="/InformacionReactivos" element={authUser ? <Inf_Readaptivos /> : <Navigate to="/" />} />
-        <Route path="/Re_Laboratorio" element={authUser ? <Re_Laboratorio /> : <Navigate to="/"/> }/>
-        <Route path="/RegistroQuimico" element={authUser ? <ReagentDetailPage /> : <Navigate to="/" />} />
-        <Route path="/Re_Mecatronica" element={authUser ? <Re_Mecatronica /> : <Navigate to="/" />} />
-        <Route path="/Re_Software" element={authUser ? <Re_Software /> : <Navigate to="/" />} />
-         <Route path="/Registro_General" element={authUser ? <Registro_General /> : <Navigate to="/" />} />
-    
-      </Routes>
+      {/* 3. Envuelve tu componente Routes con AnimatePresence */}
+      <AnimatePresence mode="wait">
+        {/* 4. Añade una 'key' a Routes usando la ruta actual */}
+        <Routes location={location} key={location.pathname}>
+          
+          {/* 5. Envuelve cada componente de página con AnimatedPage */}
+          <Route path="/" element={authUser ? <AnimatedPage><Home_Page /></AnimatedPage> : <Navigate to="/login" />} />
+          <Route path="/signup" element={!authUser ? <AnimatedPage><SignUpPage /></AnimatedPage> : <Navigate to="/" />} />
+          <Route path="/login" element={!authUser ? <AnimatedPage><LoginPage /></AnimatedPage> : <Navigate to="/" />} />
+          <Route path="/settings" element={<AnimatedPage><SettingsPage /></AnimatedPage>} />
+          <Route path="/profile" element={authUser ? <AnimatedPage><ProfilePage /></AnimatedPage> : <Navigate to="/login" />} />
+          
+          {/* ... y así sucesivamente para todas tus rutas ... */}
+          <Route path="/InformacionReactivos" element={authUser ? <AnimatedPage><Inf_Readaptivos /></AnimatedPage> : <Navigate to="/" />} />
+          <Route path="/Re_Laboratorio" element={authUser ? <AnimatedPage><Re_Laboratorio /></AnimatedPage> : <Navigate to="/"/> }/>
+          <Route path="/RegistroQuimico" element={authUser ? <AnimatedPage><ReagentDetailPage /></AnimatedPage> : <Navigate to="/" />} />
+          <Route path="/Re_Mecatronica" element={authUser ? <AnimatedPage><Re_Mecatronica /></AnimatedPage> : <Navigate to="/" />} />
+          <Route path="/Re_Software" element={authUser ? <AnimatedPage><Re_Software /></AnimatedPage> : <Navigate to="/" />} />
+          <Route path="/Registro_General" element={authUser ? <AnimatedPage><Registro_General /></AnimatedPage> : <Navigate to="/" />} />
+      
+        </Routes>
+      </AnimatePresence>
 
       <Toaster />
     </div>
   );
 };
+64
 
 export default App;

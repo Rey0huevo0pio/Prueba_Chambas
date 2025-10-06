@@ -21,7 +21,7 @@ const Home_Page = () => {
 
 
   return (
-    <div className="min-h-screen flex flex-col pt-20">
+    <div className="min-h-screen flex flex-col pt-4">
       <Registro_General className="flex-1" />
 
     </div>

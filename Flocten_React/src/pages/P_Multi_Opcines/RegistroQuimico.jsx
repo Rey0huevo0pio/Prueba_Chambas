@@ -1,4 +1,4 @@
-import React from 'react';
+
 import ReactiveSearch from '../components/ComponetRegistro/ReactiveSearch';
 import ReactiveBasicInfo from '../components/ComponetRegistro/ReactiveBasicInfo';
 import ReactiveAdditionalInfo from '../components/ComponetRegistro/ReactiveAdditionalInfo';
@@ -39,7 +39,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
 
   if (loading) {
     return (
-      <div className="container mx-auto pt-28 max-w-7xl">
+      <div className="container mx-auto pt-8 max-w-7xl">
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
           <span className="ml-4 text-lg">Cargando datos del reactivo...</span>
@@ -53,9 +53,9 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
     /*  min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start
      */
 
-    <div className=" bg-gradient-to-br from-base-100 to-base-200">
+    <div className="pt-8 bg-gradient-to-br from-base-100 to-base-200">
   
-    <div className="container mx-auto pt-28 max-w-7xl font-bold ">
+    <div className="container mx-auto max-w-7xl font-bold ">
 
       <h2 className="text-2xl font-bold mb-6">Editar Reactivo</h2>
       
