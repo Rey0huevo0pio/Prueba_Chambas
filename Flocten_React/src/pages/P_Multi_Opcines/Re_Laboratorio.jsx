@@ -20,6 +20,8 @@ import ImageDisplay from '../components/Componen_Re_Laboratorio/ImageDisplay';
 import LogUp from "../../public/img/LogUp.png";
 import LaBoritiLog from "../../public/img/LaBoritiLog.png";
 
+
+
 // Componente para el encabezado (puedes moverlo a su propio archivo si crece)
 const LabItemHeader = ({ codigo, generarCodigo, authUser, errors }) => (
   <>
@@ -46,18 +48,32 @@ const LabItemHeader = ({ codigo, generarCodigo, authUser, errors }) => (
         </div>
       </div>
     </div>
-    <div className="space-y-1.5 p-4">
-      <p className="px-4 py-2.5 bg-base-200 rounded-lg border flex items-center gap-2">
-        <Link to="/Registro_General">Regresar</Link>
-        <User2 className="w-4 h-4" />
-        Número de Control: {authUser?.controlNumber || "No disponible"}
-      </p>
-      {errors.general && (
-        <div className="alert alert-error mt-2">
-          <span>{errors.general}</span>
-        </div>
-      )}
+
+
+<div className="space-y-1.5 p-4">
+  <div className="px-4 py-2.5 bg-base-200 rounded-lg border flex flex-col gap-2">
+    <div className="flex items-center gap-2">
+      <Link to="/Registro_General" className="text-blue-600 hover:underline">Regresar</Link>
     </div>
+    <div className="flex items-center gap-2">
+      <User2 className="w-4 h-4" />
+      <span>Número de Control:</span>
+      <span className="font-semibold">{authUser?.controlNumber || "No disponible"}</span>
+    </div>
+    <div className="flex items-center gap-2">
+      <User2 className="w-4 h-4" />
+      <span>Nombre del usuario:</span>
+      <span className="font-semibold">{authUser?.fullName || "No disponible"}</span>
+    </div>
+  </div>
+
+  {errors.general && (
+    <div className="alert alert-error mt-2">
+      <span>{errors.general}</span>
+    </div>
+  )}
+</div>
+
   </>
 );
 
@@ -70,6 +86,7 @@ const Re_Laboratorio = () => {
 
   // --- 2. ESTADO DEL COMPONENTE PRINCIPAL ---
   // Estados que controlan la UI pero no son parte de los datos del formulario
+  
   const [itemType, setItemType] = useState('');
   const [reactivoImg, setReactivoImg] = useState(LogUp);
   const [simboloImg, setSimboloImg] = useState(LaBoritiLog);
@@ -77,6 +94,7 @@ const Re_Laboratorio = () => {
   
   // --- 3. HOOK DE LÓGICA DEL FORMULARIO ---
   // Toda la lógica compleja (manejo de datos, errores, envío) se obtiene de este hook
+ 
   const {
     formData,
     errors,
@@ -91,7 +109,7 @@ const Re_Laboratorio = () => {
 
   // Efecto para verificar la autenticación
   useEffect(() => {
-    if (authUser && authUser.controlNumber) {
+    if (authUser && authUser.controlNumber && authUser.fullName) {
       setAuthChecked(true);
     }
   }, [authUser]);

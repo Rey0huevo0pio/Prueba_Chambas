@@ -9,6 +9,10 @@ const  ReactivosSchema = new mongoose.Schema(
       require: true,
 
     },
+     fullName: {
+      type: String,
+      required: true,
+    },
     codigo: {
       type: String,
       required: true,

@@ -1,8 +1,20 @@
 import express from 'express';
 import Reactivos from '../models/registro.model.js';
 import User from '../models/user.model.js';
+import Herramienta from '../models/Herramienta.model.js';
+
+
 
 const router = express.Router();
+
+router.get('/Registro_Herramienta', async (req, res) => {
+  try {
+    const herramienta= await Herramienta.find();
+    res.json(herramienta);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // Ruta para obtener todos los reactivos
 router.get('/reactivos', async (req, res) => {

@@ -8,6 +8,10 @@ const HerramientaSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+      fullName: {
+      type: String,
+      required: true,
+    },
     codigo: {
       type: String,
       required: true,

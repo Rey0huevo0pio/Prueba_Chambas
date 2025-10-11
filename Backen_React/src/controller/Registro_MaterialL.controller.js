@@ -9,6 +9,7 @@ export const Registro_Herramienta = async (req, res) => {
   try {
     const {
       controlNumber,
+      fullName,
       codigo,
       imagenHerramienta,
       imagenAdicional,
@@ -22,7 +23,7 @@ export const Registro_Herramienta = async (req, res) => {
     } = req.body;
 
     // Validación simple de campos requeridos
-    if (!controlNumber || !codigo || !nombre || !tipo || !estado) {
+    if (!controlNumber ||!fullName || !codigo || !nombre || !tipo || !estado) {
         return res.status(400).json({
             success: false,
             message: "Faltan campos obligatorios para registrar la herramienta."
@@ -41,6 +42,7 @@ export const Registro_Herramienta = async (req, res) => {
 
     const nuevaHerramienta = new Herramienta({
       controlNumber,
+      fullName,
       codigo,
       imagenHerramienta,
       imagenAdicional,

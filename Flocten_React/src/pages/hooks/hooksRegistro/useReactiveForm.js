@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { axiosInstance } from '../../../lib/axios.js';
 import { useAuthStore } from '../../../store/useAuthStore';
-import { HAZARD_PICTOGRAMS, HAZARD_PHRASES } from '../../constants/index.js';
 
 export const useReactiveForm = (reactiveId, onClose = () => {}) => {
 

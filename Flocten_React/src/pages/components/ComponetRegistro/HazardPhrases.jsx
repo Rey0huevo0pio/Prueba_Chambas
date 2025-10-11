@@ -16,7 +16,7 @@ const HazardPhrases = ({ selectedPhrases, onPhraseToggle }) => (
             />
           </div>
           <div className="ml-3 text-sm ">
-            <label htmlFor={`phrase-${phrase.code}`} className="font-medium font-bold text-base-content">
+            <label htmlFor={`phrase-${phrase.code}`} className="font-bold text-base-content">
               {phrase.code}
             </label>
             <p className="font-bold text-base-content ">{phrase.text}</p>

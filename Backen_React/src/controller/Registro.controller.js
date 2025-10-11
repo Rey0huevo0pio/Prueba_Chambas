@@ -7,6 +7,7 @@ export const Registro_Reactivo = async (req, res) => {
   try {
     const {
       controlNumber,
+      fullName,
       codigo,
       imagenReactivo,
       imagenSimbolo,
@@ -25,6 +26,7 @@ export const Registro_Reactivo = async (req, res) => {
     // Validación de campos requeridos
     const camposRequeridos = {
       controlNumber,
+      fullName,
       codigo,
       imagenReactivo,
       imagenSimbolo,
@@ -62,6 +64,7 @@ export const Registro_Reactivo = async (req, res) => {
     // Crear y guardar nuevo reactivo
     const nuevoReactivo = new Reactivos({
       controlNumber,
+      fullName,
       codigo,
       imagenReactivo,
       imagenSimbolo,

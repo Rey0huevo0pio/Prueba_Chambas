@@ -45,7 +45,8 @@ const useLabForm = (authUser, codigo, itemType, reactivoImg, simboloImg) => {
     const newErrors = {};
     if (!formData.nombre) newErrors.nombre = "Nombre es requerido";
     if (!authUser?.controlNumber) newErrors.general = "No se pudo obtener el número de control";
-    
+    if (!authUser?.fullName) newErrors.general = "No se pudo obtener el Nombre del usuario";
+
     // Aquí puedes agregar el resto de tus validaciones...
     if (itemType === 'reactivo') {
       if (!formData.formula) newErrors.formula = "Fórmula es requerida";
@@ -64,6 +65,7 @@ const useLabForm = (authUser, codigo, itemType, reactivoImg, simboloImg) => {
       
       const baseData = {
         controlNumber: authUser.controlNumber,
+        fullName: authUser.fullName,
         codigo: codigo,
         nombre: formData.nombre,
         cantidad: formData.cantidad || "No especificado",
