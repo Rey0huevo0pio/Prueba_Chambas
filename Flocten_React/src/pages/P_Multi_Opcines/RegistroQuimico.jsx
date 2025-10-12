@@ -53,7 +53,7 @@ const EditReactiveForm = ({ reactiveId, onClose }) => {
     /*  min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-4 md:p-8 flex justify-center items-start
      */
 
-    <div className="pt-8 bg-gradient-to-br from-base-100 to-base-200">
+    <div className="pt-10 bg-gradient-to-br from-base-100 to-base-200">
   
     <div className="container mx-auto max-w-7xl font-bold ">
 
