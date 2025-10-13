@@ -72,9 +72,10 @@ const App = () => {
     );
 
  return (
+  
     <div data-theme={theme} className="text-base-content">
-      <Navbar />
-
+      
+<Navbar />
       {/* 3. Envuelve tu componente Routes con AnimatePresence */}
       <AnimatePresence mode="wait">
         {/* 4. Añade una 'key' a Routes usando la ruta actual */}

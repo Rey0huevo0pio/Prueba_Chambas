@@ -21,11 +21,10 @@ import LogUp from "../../public/img/LogUp.png";
 import LaBoritiLog from "../../public/img/LaBoritiLog.png";
 
 
-
 // Componente para el encabezado (puedes moverlo a su propio archivo si crece)
 const LabItemHeader = ({ codigo, generarCodigo, authUser, errors }) => (
   <>
-    <div className="bg-gradient-to-r from-primary to-base-content p-6">
+    <div className="bg-gradient-to-r from-primary to-base-content p-8 pt-8">
       <div className="flex flex-col md:flex-row justify-between items-center gap-1">
         <div className="flex items-center gap-4">
           <div className="avatar">
@@ -143,7 +142,7 @@ const Re_Laboratorio = () => {
   // Estado de carga inicial
   if (!authChecked) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center ">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg"></div>
           <p className="mt-4">Verificando autenticación...</p>
@@ -153,7 +152,7 @@ const Re_Laboratorio = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-8 md:pt-4 flex justify-center items-start">
+    <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200 p-8 pt-10 flex justify-center items-start">
       <div className="max-w-5xl bg-base-100 rounded-xl shadow-2xl overflow-hidden">
         
         <LabItemHeader codigo={codigo} generarCodigo={generarCodigo} authUser={authUser} errors={errors} />

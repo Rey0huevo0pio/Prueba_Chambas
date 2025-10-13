@@ -7,7 +7,7 @@ const Navbar = () => {
   const { logout, authUser, menu } = useAuthStore();
 
   return (
-    <header className="border-b border-base-300 fixed w-full min-h-20 top-0 z-40 backdrop-blur-lg bg-base-300/15">
+    <header className="font-bold text-xl text-base-content border-base-300 fixed w-full min-h-20 top-0 z-40 backdrop-blur-lg bg-base-300/15">
       <div className="container mx-auto px-4 max-h-24">
         <div className="flex items-center justify-between h-full">
           {/* Logo */}
@@ -16,7 +16,7 @@ const Navbar = () => {
               <div className="w-14 h-14 rounded-full flex items-center justify-center">
                 <img src={Logp} className="w-14 h-14 text-primary" alt="Logo" />
               </div>
-              <h1 className="text-xl font-semibold text-gray-800 hover:text-indigo-600 transition-all">MultiPio</h1>
+              <h1 className="text-4xl font-bold font-serif text-gray-800 hover:text-indigo-600 transition-all">MultiPio</h1>
             </Link>
           </div>
 
@@ -24,18 +24,18 @@ const Navbar = () => {
           <div className="flex items-center gap-2">
             <Link to={"/settings"} className={`btn btn-sm gap-2 transition-colors`}>
               <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">Settings</span>
+              <span className="hidden sm:inline font-bold text-sm text-base-content">Settings</span>
             </Link>
             {authUser && (
               <>
                 <Link to={"/profile"} className={`btn btn-sm gap-2`}>
                   <User className="size-5" />
-                  <span className="hidden sm:inline">Profile</span>
+                  <span className="hidden sm:inline font-bold text-sm text-base-content ">Profile</span>
                 </Link>
                 {/* CORREGIDO: Cambié Link por button para logout */}
                 <button onClick={logout} className={`btn btn-sm gap-2`}>
                   <LogOut className="size-5" />
-                  <span className="hidden sm:inline">Logout</span>
+                  <span className="hidden sm:inline font-bold text-sm text-base-content ">Logout</span>
                 </button>
               </>
             )}
