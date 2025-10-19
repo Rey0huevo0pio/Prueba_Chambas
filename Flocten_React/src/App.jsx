@@ -20,11 +20,18 @@ import Re_Laboratorio from "./pages/P_Multi_Opcines/Re_Laboratorio.jsx";
 import Inf_Readaptivos from "./pages/P_Multi_Opcines/Inf_Readaptivos";
 import Re_Mecatronica from "./pages/P_Multi_Opcines/Re_Mecatronica";
 import Re_Software from "./pages/P_Multi_Opcines/Re_Software"
+
+import Formulario_Reactivos from "./pages/components/Componen_Quimico/Componente_Reactivos/Formulario_Reactivos";
+import Formulario_Material from "./pages/components/Componen_Quimico/Componente_Material/Formulario_Material";
+
+
 // Store y librerías adicionales
 import { useAuthStore } from "./store/useAuthStore.js";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { useThemeStore } from "./store/useThemeStore.js";
+
+
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -95,6 +102,11 @@ const App = () => {
           <Route path="/Re_Mecatronica" element={authUser ? <AnimatedPage><Re_Mecatronica /></AnimatedPage> : <Navigate to="/" />} />
           <Route path="/Re_Software" element={authUser ? <AnimatedPage><Re_Software /></AnimatedPage> : <Navigate to="/" />} />
           <Route path="/Registro_General" element={authUser ? <AnimatedPage><Registro_General /></AnimatedPage> : <Navigate to="/" />} />
+      {/* ... y así sucesivamente para todas tus rutas de RegistroQuimico */}
+          <Route path="/Formulario_Reactivos" element={authUser ? <AnimatedPage><Formulario_Reactivos /></AnimatedPage> : <Navigate to="/" />} />
+          <Route path="/Formulario_Material" element={authUser ? <AnimatedPage><Formulario_Material /></AnimatedPage> : <Navigate to="/" />} />
+
+
       
         </Routes>
       </AnimatePresence>

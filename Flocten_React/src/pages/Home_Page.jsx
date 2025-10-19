@@ -1,31 +1,26 @@
-import React from "react"
+import React from "react";
 
 import AOS from "aos";
-import 'aos/dist/aos.css'
+import "aos/dist/aos.css";
 
-
-import "slick-carousel/slick/slick.css"
-import "slick-carousel/slick/slick-theme.css"
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import Registro_General from "./P_Multi_Opcines/Registro_General";
 
 const Home_Page = () => {
-
-  React.useEffect(()=>{
+  React.useEffect(() => {
     AOS.init({
-      offset:100,
-      duration:800,
+      offset: 100,
+      duration: 800,
       easing: "ease-in-sine",
-      delay:100,
+      delay: 100,
     });
-  })
-
+  });
 
   return (
     <div className="min-h-screen flex flex-col pt-8">
       <Registro_General className="flex-1" />
-
     </div>
   );
-  
-}
-export default Home_Page
+};
+export default Home_Page;

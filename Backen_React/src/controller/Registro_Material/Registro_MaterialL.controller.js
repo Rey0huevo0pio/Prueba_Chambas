@@ -1,6 +1,6 @@
 
 
-import Herramienta from "../models/Herramienta.model.js"; // <--- AÑADE ESTA LÍNEA
+import Herramienta from "../../models/Herramienta.model.js"; // <--- AÑADE ESTA LÍNEA
 
 
 // 2. AÑADE ESTA NUEVA FUNCIÓN para registrar herramientas

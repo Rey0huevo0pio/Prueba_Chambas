@@ -13,7 +13,6 @@ const LoginPage = () => {
   return (
     // 👇 CAMBIO PRINCIPAL: Volvemos a min-h-screen para permitir que el contenido crezca si es necesario.
     <div className="min-h-screen bg-base-100 lg:grid lg:grid-cols-2">
-
       {/* ======================================================= */}
       {/* LADO IZQUIERDO: CONTENEDOR DEL FORMULARIO              */}
       {/* ======================================================= */}
@@ -55,7 +54,6 @@ const LoginPage = () => {
           className="h-full w-full object-cover" // object-cover es ideal para que la imagen llene el espacio sin deformarse
         />
       </motion.div>
-
     </div>
   );
 };

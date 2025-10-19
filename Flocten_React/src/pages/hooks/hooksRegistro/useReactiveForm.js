@@ -2,37 +2,42 @@ import { useState, useEffect } from 'react';
 import { axiosInstance } from '../../../lib/axios.js';
 import { useAuthStore } from '../../../store/useAuthStore';
 
-export const useReactiveForm = (reactiveId, onClose = () => {}) => {
+// Estado inicial para resetear el formulario
+const initialReactiveData = {
+  codigo: '',
+  nombre: '',
+  imagenReactivo: '',
+  imagenSimbolo: '',
+  formula: '',
+  cantidad: '',
+  numeroLote: '',
+  concentracion: '',
+  descripcion: '',
+  primerosAuxilios: '',
+  manejoSeguro: '',
+  pictogramasPeligro: [],
+  frasesPeligro: []
+};
 
+export const useReactiveForm = (reactiveId, onClose = () => {}) => {
   const { authUser } = useAuthStore();
-  const [reactiveData, setReactiveData] = useState({
-    codigo: '',
-    nombre: '',
-    imagenReactivo: '',
-    imagenSimbolo: '',
-    formula: '',
-    cantidad: '',
-    numeroLote: '',
-    concentracion: '',
-    descripcion: '',
-    primerosAuxilios: '',
-    manejoSeguro: '',
-    pictogramasPeligro: [],
-    frasesPeligro: []
-  });
+  const [reactiveData, setReactiveData] = useState(initialReactiveData);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (!reactiveId || reactiveId === '') {
-     setLoading(false);
+      setLoading(false);
       return;
     }
 
@@ -53,6 +58,15 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
   
     fetchReactiveData();
   }, [reactiveId, authUser?.token]);
+
+  // Función para resetear el formulario
+  const resetForm = () => {
+    setReactiveData(initialReactiveData);
+    setSearchTerm('');
+    setSearchResults([]);
+    setShowSearchResults(false);
+    setError(null);
+  };
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
@@ -75,10 +89,7 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
       });
       
       if (err.response?.status === 401) {
-        // Manejar específicamente el error de autenticación
         setError("Tu sesión ha expirado. Por favor inicia sesión nuevamente.");
-        // Opcional: cerrar sesión automáticamente
-      
       } else {
         setError(`Error al buscar reactivos: ${err.response?.data?.message || err.message}`);
       }
@@ -117,10 +128,15 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
       );
 
       setSuccess(true);
+      setSuccessMessage('Los cambios se guardaron correctamente!');
+      
+      // Limpiar después de 3 segundos
       setTimeout(() => {
         setSuccess(false);
-        onClose();
-      }, 8000);
+        setSuccessMessage('');
+        resetForm(); // Limpiar el formulario
+        onClose(); // Cerrar el modal o redirigir
+      }, 3000);
     } catch (err) {
       setError(`Error al guardar los cambios: ${err.response?.data?.message || err.message}`);
       console.error(err);
@@ -129,7 +145,46 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
     }
   };
 
- const handleImageUpload = async (e, fieldName) => {
+  // Función para eliminar reactivo
+  const handleDelete = async () => {
+    if (!reactiveData.codigo) {
+      setError("No se puede eliminar: código del reactivo no disponible");
+      return;
+    }
+
+    setDeleting(true);
+    setError(null);
+
+    try {
+      await axiosInstance.delete(
+        `http://192.168.100.16:5001/api/reactivos/${reactiveData.codigo}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${authUser?.token}`
+          }
+        }
+      );
+
+      setSuccess(true);
+      setSuccessMessage('Reactivo eliminado correctamente!');
+      
+      // Limpiar después de 3 segundos
+      setTimeout(() => {
+        setSuccess(false);
+        setSuccessMessage('');
+        resetForm(); // Limpiar el formulario
+        onClose(); // Cerrar el modal o redirigir
+      }, 3000);
+    } catch (err) {
+      setError(`Error al eliminar el reactivo: ${err.response?.data?.message || err.message}`);
+      console.error(err);
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleImageUpload = async (e, fieldName) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -191,20 +246,30 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
     }));
   };
 
- 
+  // Función para abrir el modal de confirmación
+  const confirmDelete = () => {
+    setShowDeleteConfirm(true);
+  };
 
+  // Función para cancelar la eliminación
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+  };
 
   return {
     reactiveData,
     loading,
     saving,
+    deleting,
     error,
     success,
+    successMessage,
     uploadProgress,
     searchTerm,
     searchResults,
     showSearchResults,
     searchLoading,
+    showDeleteConfirm,
     handleSearch,
     handleSelectReactive,
     handleInputChange,
@@ -212,6 +277,10 @@ export const useReactiveForm = (reactiveId, onClose = () => {}) => {
     handleHazardPhraseToggle,
     handleImageUpload,
     handleSubmit,
+    handleDelete,
+    confirmDelete,
+    cancelDelete,
+    resetForm,
     setSearchTerm,
     setShowSearchResults
   };
