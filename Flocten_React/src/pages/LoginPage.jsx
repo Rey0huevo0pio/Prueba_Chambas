@@ -5,7 +5,8 @@ import { useAuthStore } from "../store/useAuthStore";
 import LoginHeader from "./Componente_Acceso/Auth_Login/LoginHeader";
 import LoginForm from "./Componente_Acceso/Auth_Login/LoginForm";
 import AuthRedirect from "./Componente_Acceso/Auth_Login/AuthRedirect";
-import Lab_Primero from "../public/img/Lab_Primero.png";
+import Inteligencia from "../public/img/Inteligencia.jpg";
+
 
 const LoginPage = () => {
   const { login, isLoggingIn, error } = useAuthStore();
@@ -49,7 +50,7 @@ const LoginPage = () => {
         className="hidden lg:block"
       >
         <img
-          src={Lab_Primero}
+          src={Inteligencia}
           alt="Equipos de laboratorio clínico"
           className="h-full w-full object-cover" // object-cover es ideal para que la imagen llene el espacio sin deformarse
         />

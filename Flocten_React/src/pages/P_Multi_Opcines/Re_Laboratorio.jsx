@@ -33,7 +33,7 @@ const LabItemHeader = ({ codigo, generarCodigo, authUser, errors }) => (
             </div>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-base-100">
-            Registro de Nuevo Item de Laboratorio
+            Registro de Nuevo Item de Almacen
           </h1>
         </div>
         <div className="flex items-center gap-2">
@@ -168,8 +168,8 @@ const Re_Laboratorio = () => {
               required
             >
               <option value="" disabled>Seleccione un tipo</option>
-              <option value="reactivo">Reactivo Químico</option>
-              <option value="herramienta">Herramienta de Laboratorio</option>
+              <option value="reactivo">quimicos o reactivos</option>
+              <option value="herramienta">Herramientas o productos diferentes</option>
             </select>
           </div>
 

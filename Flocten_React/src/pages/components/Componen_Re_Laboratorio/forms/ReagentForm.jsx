@@ -10,7 +10,7 @@ const ReagentForm = ({ formData, handleChange, togglePictogram, toggleHazardPhra
       {/* ...el resto de tus CustomFormInput se queda igual... */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-11">
         <CustomFormInput
-          label="Nombre del Reactivo"
+          label="Nombre del quimico"
           name="nombre"
           value={formData.nombre}
           onChange={handleChange}

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { Settings, User, LogOut } from "lucide-react"; // Agregué LogOut
-import Logp from "../public/img/LaBoritiLog.png";
+import monta from "../public/img/monta.svg";
 
 const Navbar = () => {
   const { logout, authUser, menu } = useAuthStore();
@@ -14,7 +14,7 @@ const Navbar = () => {
           <div className="flex items-center gap-4 p-2">
             <Link to="/" className="flex items-center gap-4 hover:opacity-80 transition-all">
               <div className="w-14 h-14 rounded-full flex items-center justify-center">
-                <img src={Logp} className="w-14 h-14 text-primary" alt="Logo" />
+                <img src={monta} className="w-14 h-14 text-primary" alt="Logo" />
               </div>
               <h1 className="text-4xl font-bold font-serif text-gray-800 hover:text-indigo-600 transition-all">MultiPio</h1>
             </Link>
